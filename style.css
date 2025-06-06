@@ -1,1 +1,9 @@
+body{
+    background-color:#111111;
+    justify-content:center;
+}
 
+.sky-start{
+    width:200px;
+    height:200px;
+}

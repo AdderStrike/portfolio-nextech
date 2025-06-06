@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>My Portfolio</title>
         <link href="style.css" rel="stylesheet">
     </head>
     <body>
-
+        <div class="sky-start"></div>
     </body>
+    <script>
+        skyColor = "#3466FF";
+        console.log(document.querySelectorAll(".sky-start"));
+
+        for(var i=0;i<10;i++){
+            let skyPiece = document.createElement("div");
+            skyPiece.setAttribute("class","sky-piece");
+            if (i==0){
+                document.querySelectorAll(".sky-start")[0].style.backgroundColor=skyColor;
+                skyPiece.style.height = document.querySelectorAll(".sky-start")[0].style.height * 0.5;
+                //skyPiece.style.backgroundColor = 
+            } else {
+                skyPiece.style.height = document.querySelectorAll(".sky-piece")[i-1].style.height * 0.5;
+            }
+            
+            
+            
+        }
+    </script>
 </html>
