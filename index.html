@@ -9,11 +9,13 @@
         <div class="sky-start" style="height: 400px;"></div>
     </body>
     <script>
-        let skyColor = rgbToHex([Math.random()*256,Math.random()*256,Math.random()*256]);
+
+        let skyColor = rgbToHex([Math.random()*64,Math.random()*64,Math.random()*64]);
         let skyGivenHeight = 400;
         //console.log(document.querySelectorAll(".sky-start"));
         //console.log(JSON.stringify(document.querySelectorAll(".sky-start")[0].style.height).replace(/\D/g,""));
-
+        
+        // Creates a sky-like background
         for(var i=0;i<10;i++){
             let skyPiece = document.createElement("div");
             skyPiece.setAttribute("class","sky-piece");
