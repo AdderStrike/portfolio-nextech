@@ -3,24 +3,43 @@
     <head>
         <title>My Portfolio</title>
         <link href="style.css" rel="stylesheet">
+        <script src="assist.js"></script>
     </head>
     <body>
-        <div class="sky-start"></div>
+        <div class="sky-start" style="height: 400px;"></div>
     </body>
     <script>
-        skyColor = "#3466FF";
-        console.log(document.querySelectorAll(".sky-start"));
+        let skyColor = rgbToHex([Math.random()*256,Math.random()*256,Math.random()*256]);
+        let skyGivenHeight = 400;
+        //console.log(document.querySelectorAll(".sky-start"));
+        //console.log(JSON.stringify(document.querySelectorAll(".sky-start")[0].style.height).replace(/\D/g,""));
 
         for(var i=0;i<10;i++){
             let skyPiece = document.createElement("div");
             skyPiece.setAttribute("class","sky-piece");
+            
+            skyGivenHeight*=2/3;
             if (i==0){
-                document.querySelectorAll(".sky-start")[0].style.backgroundColor=skyColor;
-                skyPiece.style.height = document.querySelectorAll(".sky-start")[0].style.height * 0.5;
-                //skyPiece.style.backgroundColor = 
+                let skyStart = document.querySelectorAll(".sky-start")[0];
+
+                skyStart.style.backgroundColor=skyColor;
+                skyPiece.style.height = skyGivenHeight+"px";
+                console.log(skyPiece.style.height);
+                skyPiece.style.backgroundColor = blueShift(skyColor);
+                skyStart.appendChild(skyPiece);
+                
             } else {
-                skyPiece.style.height = document.querySelectorAll(".sky-piece")[i-1].style.height * 0.5;
+                let prevSky = document.querySelectorAll(".sky-piece")[i-1];
+
+                //console.log(skyHeight);
+                skyPiece.style.height = skyGivenHeight+"px";
+                skyPiece.style.backgroundColor = blueShift(prevSky.style.backgroundColor);
+                prevSky.appendChild(skyPiece);
+                //console.log(skyPiece.style.backgroundColor);
             }
+            
+        
+
             
             
             
