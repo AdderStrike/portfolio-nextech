@@ -4,6 +4,7 @@
     As per rules of js modules, NO GLOBAL VARIABLES
  */
 
+// Standard Functions
 
 /*
     rgbToHex
@@ -67,8 +68,10 @@ function rgbCSSWarp(color){
     return fracArray;
 }
 
+//Custom Functions
+
 /*
-    hexToRGB
+    blueShift
         QuickDesc: takes in an object and determines the RGB array for it, then
                     modifies the color to make it more of a sky-blue
                     and returns a hex code for the new color;
@@ -122,4 +125,64 @@ function blueShift(color) {
 
   return rgbToHex(color);
 
+}
+
+function getDecimalTime(){
+    let hours = new Date().getHours();
+    let minutes = new Date().getMinutes();
+
+    return (hours+minutes/60);
+}
+
+// Link to desmos to show concepts:
+// https://www.desmos.com/calculator/quyaf8r8sd 
+
+
+function redClock(time){
+    let redTime=0;
+
+    if ((time>=4&&time<=8)||(time>=16&&time<=20)) {
+        redTime = time*Math.PI/4;
+        redTime = Math.sin(redTime);
+        redTime = Math.pow(redTime,2);
+        redTime *= 12;
+    }
+
+    return (redTime+2)*16;
+}
+
+function greenClock(time){
+    let greenTime = 0;
+
+    if (time>=5&&time<=8) {
+        greenTime += 3;
+    } else if (time>=16&&time<=19){
+        greenTime ++;
+    } else if (time>=8&&time<=16){
+        greenTime += 10;
+    }
+
+    if ((time>=5&&time<=8)||(time>=16&&time<=19)){
+        greenTime += time;
+        greenTime *= Math.PI/4;
+        greenTime = Math.sin(greenTime);
+        greenTime = Math.pow(greenTime,1/2);
+        greenTime *= 13;
+    }
+
+    return (greenTime+1)*16;
+}
+
+function blueClock(time){
+    blueTime = time*Math.PI/24;
+    blueTime = Math.sin(blueTime);
+    blueTime = Math.pow(blueTime,4);
+    blueTime *= 13;
+    blueTime += 3;
+
+    return blueTime*16;
+}
+
+function colorTime(time){
+    return rgbToHex([redClock(time),greenClock(time),blueClock(time)]);
 }
