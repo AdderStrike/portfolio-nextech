@@ -9,8 +9,14 @@
         <div class="sky-start" style="height: 400px;"></div>
     </body>
     <script>
+        /*
+            17:00 - "#4488bb"
+            18:00 - "#cc9944";
+            19:00 - "#bb9900";
+         */
 
-        let skyColor = rgbToHex([Math.random()*64,Math.random()*64,Math.random()*64]);
+
+        let skyColor = rgbToHex([Math.random()*255,Math.random()*255,Math.random()*255]);
         let skyGivenHeight = 400;
         //console.log(document.querySelectorAll(".sky-start"));
         //console.log(JSON.stringify(document.querySelectorAll(".sky-start")[0].style.height).replace(/\D/g,""));
