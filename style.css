@@ -7,10 +7,15 @@ body{
 
 .backgrounder{
     z-index:0;
-    margin-top:-100vh;
+    /*margin-top:-100vh;*/
     width:100vw;
     height:100vh;
 }
+
+.background-z{
+    z-index:inherit;
+}
+
 .sky-start{
     position:fixed;
     left:0;
@@ -22,4 +27,51 @@ body{
 
 .sky-piece{
     z-index:-1;
+}
+
+.navbar {
+    padding:20px;
+    margin:10px;
+    background-color: gray;
+    border-radius: 10px;
+    color:black;
+}
+
+.navbar-link{
+    margin-left:10px;
+    margin-right:10px;
+    color:rgb(0, 0, 0);
+    font-size:15pt;
+    font-weight:400;
+}
+
+.navbar-brand{
+    font-weight:500;
+    font-size:20pt;
+}
+
+.slider-container{
+    position:fixed;
+    bottom:0;
+    margin-bottom:10px;
+    margin-left:10px;
+    left:0%;
+    width:200px;
+    padding:10px;
+    padding-bottom:10px;
+    border-radius:10px;
+    background-color:gray;
+}
+
+.slider{
+    width:180px;
+}
+
+.slider-text{
+    text-align:center;
+    margin-bottom:5px;
+}
+
+.hours-after{
+    font-size:20pt;
 }

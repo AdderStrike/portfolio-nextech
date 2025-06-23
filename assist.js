@@ -140,7 +140,6 @@ function blueShift(color) {
         2. minutes is called as how many minutes have passed since the last full hour
         3. return hours as an int and minutes as a fraction combined
  */
-
 function getDecimalTime(time = new Date()){
     let hours = time.getHours();
     let minutes = time.getMinutes();
@@ -149,7 +148,7 @@ function getDecimalTime(time = new Date()){
 }
 
 // Link to desmos to show concepts:
-// https://www.desmos.com/calculator/jvwgnkwti7
+// https://www.desmos.com/calculator/6maxcmbysb
 
 
 /*
@@ -241,7 +240,7 @@ function greenClock(time){
         When called:
         1. blueTime is declared and stored as time * pi/24
         2. The sine of blueTime is taken and stored as blueTime
-        3. The square root of blueTime is taken and stored as blueTime
+        3. The quartic of blueTime is taken and stored as blueTime
         4. blueTime is multiplied by 13
         5. 3 is added to blueTime
         6. blueTime is multiplied by 16
@@ -259,6 +258,68 @@ function blueClock(time){
 }
 
 /*
+    grayClock
+        QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
+         and returns what the color of the navbar is to correlate
+        Parameters: time, should be a number
+
+        When called:
+        1. grayTime is declared and stored as time*pi/24
+        2. The sine of grayTime is taken and stored as grayTime
+        3. The square of grayTime is taken and stored as grayTime
+        4. grayTime is multiplied by 8
+        5. 8 is added to grayTime
+        6. grayTime is multiplied by 16
+        7. grayTime is rounded for RGB reasons
+        8. A hexcode is returned from an RGB array with r, g, and b all being grayTime
+ */
+function grayClock(time){
+    //console.log("time: "+time);
+    let grayTime = time*Math.PI/24;
+    //console.log("grayTime 1: "+grayTime);
+    grayTime = Math.sin(grayTime);
+    //console.log("grayTime 2: "+grayTime);
+    grayTime = Math.pow(grayTime,2);
+    //console.log("grayTime 3: "+grayTime);
+    grayTime *= 8;
+    //console.log("grayTime 4: "+grayTime);
+    grayTime += 8;
+    //console.log("grayTime 5: "+grayTime);
+
+    grayTime *= 16;
+
+    grayTime-=1;
+    //console.log("grayTime 6: "+grayTime);
+    grayTime = Math.round(grayTime);
+    //console.log("grayTime 7: "+grayTime);
+    return rgbToHex([grayTime,grayTime,grayTime]);
+    
+}
+
+/*
+    fullGrayClock
+        QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
+         and returns what the color of the centerpiece is to correlate
+        Parameters: time, should be a number
+
+        When called:
+        1. grayTime is declared and stored as time*pi/24
+        2. The sine of grayTime is taken and stored as grayTime
+        3. The square of grayTime is taken and stored as grayTime
+        4. grayTime is multiplied by 255
+        5. grayTime is rounded for RGB reasons
+        6. A hexcode is returned from an RGB array with r, g, and b all being grayTime
+ */
+function fullGrayClock(time){
+    let grayTime = time*Math.PI/24;
+    grayTime = Math.sin(grayTime);
+    grayTime = Math.pow(grayTime,2);
+    grayTime*=255;
+    grayTime = Math.round(grayTime);
+    return rgbToHex([grayTime,grayTime,grayTime]);
+}
+
+/*
     colorTime
         QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
          and returns a hexcode of what the color of the sky might be
@@ -272,3 +333,127 @@ function blueClock(time){
 function colorTime(time){
     return rgbToHex([redClock(time),greenClock(time),blueClock(time)]);
 }
+
+/*
+    navCompatCreate
+        QuickDesc: changes the color of each navbar and related elements to a more desirable color
+
+        Parameters: time, should be a number
+        In default paramters:
+            time = 0
+
+        When called:
+        1. navList is declared and stores all instances of the class navbar and class slider-container;
+        2. For each item in navList...
+        2a. The background color is given by grayClock with respect to the current hours and time
+ */
+function navCompatCreate(time=0){
+    let navList = [...document.querySelectorAll(".navbar"),...document.querySelectorAll('.slider-container')];
+
+    navList.forEach(function(element){
+        element.style.backgroundColor = grayClock((getDecimalTime()+Number(time))%24);
+    });
+}
+
+/*
+    skyCompatCreate
+        QuickDesc: changes the color of each navbar and related elements to a more desirable color
+
+        Parameters: time, should be a number
+        In default paramters:
+            time = 0
+
+        When called:
+        1. skyColor is declared as the color of the sky from the current hours and time
+        2. For 10 times iterated with i as counter
+        2a. If i is 0
+        2aa. The element with the class sky-start's background color is skyColor
+        2ab. The first element with the class sky-piece's background color is blueShift in skyColor
+        2b. If i is not 0
+        2ba. The given element out of an array with all elements of class sky-piece's background color is the blueShift in the background color of the element before in the array
+ */
+function skyCompatCreate(time=0){
+    let skyColor = colorTime((getDecimalTime()+Number(time))%24); 
+    for (var i=0;i<10;i++){
+        if (i==0){
+            document.querySelector(".sky-start").style.backgroundColor = skyColor;
+            document.querySelectorAll(".sky-piece")[i].style.backgroundColor = blueShift(skyColor);
+        } else {
+            document.querySelectorAll(".sky-piece")[i].style.backgroundColor = blueShift(document.querySelectorAll(".sky-piece")[i-1].style.backgroundColor);
+        }
+    }
+}
+
+/*
+    createSky
+        QuickDesc: Creates the background that is in all websites by manipulating divs
+
+        Parameters: time, should be a number
+        In default parameters:
+            time=0
+
+        When called:
+        1. skyGivenHeight is declared as the screen's height
+        2. The next few steps are repeated 10 times, using i as a tracker
+        2a. skyPiece is declared as a div element
+        2b. skyPiece has the class sky-piece
+        2c. skyGivenHeight is multiplied by 2/3
+        2d. If i is 0, follow here
+        2da. skyStart is declared as the element with a class sky-start
+        2db. skyPiece's height is given as skyGivenHeight as pixels;
+        2dc. skyStart adds skyPiece to the end
+        2e. If i is not 0, follow here
+        2ea. prevSky is declared as the item before current in an array with all elements with class sky-piece
+        2eb. skyPiece's height is given as skyGivenHeight as pixels
+        2ec. preSky adds skyPiece to the end
+        3. skyCompatCreate with respect to time for color
+
+
+ */
+function createSky(time=0){
+    let skyGivenHeight = screen.height; 
+    for(var i=0;i<10;i++){ 
+        let skyPiece = document.createElement("div");
+        skyPiece.setAttribute("class","sky-piece");
+        
+        skyGivenHeight*=2/3;
+        if (i==0){
+            let skyStart = document.querySelector(".sky-start");
+            skyPiece.style.height = skyGivenHeight+"px";
+            //console.log(skyPiece.style.height);
+            skyStart.appendChild(skyPiece);
+            
+        } else {
+            let prevSky = document.querySelectorAll(".sky-piece")[i-1];
+            //console.log(skyHeight);
+            skyPiece.style.height = skyGivenHeight+"px";
+            prevSky.appendChild(skyPiece);
+            //console.log(skyPiece.style.backgroundColor);
+        }
+
+    }
+    skyCompatCreate(time);
+}
+
+// Event Listeners - after loading, please
+document.addEventListener("DOMContentLoaded",function(){
+
+    /*
+        Slider bar's oninput
+        QuickDesc: Updates the color theme
+
+        Parameters: event, the event itself
+
+        When called:
+        1. The element with class hours-after's innerHTML is now the event's target value
+        2. Update navbar coloring with the event's target value
+        3. Update background coloring with the event's target value
+
+
+    */
+    document.querySelector(".slider").addEventListener("input",function(event){
+        document.querySelector(".hours-after").innerHTML = event.target.value;
+        navCompatCreate(event.target.value);
+        skyCompatCreate(event.target.value);
+    });
+});

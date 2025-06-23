@@ -12,43 +12,24 @@
     <body>
         <div class="sky-start" style="height: 100vh;width: 100vw;"></div>
         <div class="backgrounder">
-            
+            <nav class="navbar background-z">
+                <a class="navbar-link navbar-brand" href="index.html">Addison's Portfolio</a>
+                <a class="navbar-link" href="aboutme.html">About Me</a>
+                <a class="navbar-link" href="adventures.html">My Adventures</a>
+                <a class="navbar-link" href="coding.html">Coding Skills</a>
+                <a class="navbar-link" href="mrp.html">Mr P.'s Classroom</a>
+                <a class="navbar-link" href="nextech.html">Nextech</a>
+            </nav>
+        </div>
+        <div class="slider-container background-z">
+            <p class="slider-text hours-after">0</p>
+            <p class="slider-text dec-hours">Hours After</p>
+            <input type="range" min="0" max="24" value="0" class="slider" step="0.5">
         </div>
     </body>
-    <script>
-        let skyColor = colorTime(getDecimalTime());
-        let skyGivenHeight = screen.height;       
-        // Creates a sky-like background
-        
-        function createSky(){
-            for(var i=0;i<10;i++){
-                let skyPiece = document.createElement("div");
-                skyPiece.setAttribute("class","sky-piece");
-                
-                skyGivenHeight*=2/3;
-                if (i==0){
-                    let skyStart = document.querySelectorAll(".sky-start")[0];
-
-                    skyStart.style.backgroundColor=skyColor;
-                    skyPiece.style.height = skyGivenHeight+"px";
-                    //console.log(skyPiece.style.height);
-                    skyPiece.style.backgroundColor = blueShift(skyColor);
-                    skyStart.appendChild(skyPiece);
-                    
-                } else {
-                    let prevSky = document.querySelectorAll(".sky-piece")[i-1];
-
-                    //console.log(skyHeight);
-                    skyPiece.style.height = skyGivenHeight+"px";
-                    skyPiece.style.backgroundColor = blueShift(prevSky.style.backgroundColor);
-                    prevSky.appendChild(skyPiece);
-                    //console.log(skyPiece.style.backgroundColor);
-                }
-            
-            }
-        }
+    <script>     
+        let timeValue = document.querySelector('.slider').value;
         createSky();
-            
-        
+        navCompatCreate();  
     </script>
 </html>
