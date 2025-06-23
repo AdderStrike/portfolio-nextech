@@ -3,54 +3,52 @@
     <head>
         <title>My Portfolio</title>
         <link href="style.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <script src="assist.js"></script>
     </head>
     <body>
-        <div class="sky-start" style="height: 400px;"></div>
+        <div class="sky-start" style="height: 100vh;width: 100vw;"></div>
+        <div class="backgrounder">
+            
+        </div>
     </body>
     <script>
-        /*
-            17:00 - "#4488bb"
-            18:00 - "#cc9944";
-            19:00 - "#bb9900";
-         */
-
-
-        let skyColor = colorTime(getDecimalTime);
-        let skyGivenHeight = 400;
-        //console.log(document.querySelectorAll(".sky-start"));
-        //console.log(JSON.stringify(document.querySelectorAll(".sky-start")[0].style.height).replace(/\D/g,""));
-        
+        let skyColor = colorTime(getDecimalTime());
+        let skyGivenHeight = screen.height;       
         // Creates a sky-like background
-        for(var i=0;i<10;i++){
-            let skyPiece = document.createElement("div");
-            skyPiece.setAttribute("class","sky-piece");
-            
-            skyGivenHeight*=2/3;
-            if (i==0){
-                let skyStart = document.querySelectorAll(".sky-start")[0];
-
-                skyStart.style.backgroundColor=skyColor;
-                skyPiece.style.height = skyGivenHeight+"px";
-                console.log(skyPiece.style.height);
-                skyPiece.style.backgroundColor = blueShift(skyColor);
-                skyStart.appendChild(skyPiece);
+        
+        function createSky(){
+            for(var i=0;i<10;i++){
+                let skyPiece = document.createElement("div");
+                skyPiece.setAttribute("class","sky-piece");
                 
-            } else {
-                let prevSky = document.querySelectorAll(".sky-piece")[i-1];
+                skyGivenHeight*=2/3;
+                if (i==0){
+                    let skyStart = document.querySelectorAll(".sky-start")[0];
 
-                //console.log(skyHeight);
-                skyPiece.style.height = skyGivenHeight+"px";
-                skyPiece.style.backgroundColor = blueShift(prevSky.style.backgroundColor);
-                prevSky.appendChild(skyPiece);
-                //console.log(skyPiece.style.backgroundColor);
+                    skyStart.style.backgroundColor=skyColor;
+                    skyPiece.style.height = skyGivenHeight+"px";
+                    //console.log(skyPiece.style.height);
+                    skyPiece.style.backgroundColor = blueShift(skyColor);
+                    skyStart.appendChild(skyPiece);
+                    
+                } else {
+                    let prevSky = document.querySelectorAll(".sky-piece")[i-1];
+
+                    //console.log(skyHeight);
+                    skyPiece.style.height = skyGivenHeight+"px";
+                    skyPiece.style.backgroundColor = blueShift(prevSky.style.backgroundColor);
+                    prevSky.appendChild(skyPiece);
+                    //console.log(skyPiece.style.backgroundColor);
+                }
+            
             }
+        }
+        createSky();
             
         
-
-            
-            
-            
-        }
     </script>
 </html>

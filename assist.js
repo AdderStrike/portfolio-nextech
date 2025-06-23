@@ -127,17 +127,51 @@ function blueShift(color) {
 
 }
 
-function getDecimalTime(){
-    let hours = new Date().getHours();
-    let minutes = new Date().getMinutes();
+/*
+    getDecimalTime
+        QuickDesc: takes in a Date object and returns how many hours (decimal) have passed since midnight
+
+        Parameters: time, should be a Date object
+            Defaults:
+                time will be a new Date object
+
+        When called:
+        1. hours is called as how many hours have passed since midnight
+        2. minutes is called as how many minutes have passed since the last full hour
+        3. return hours as an int and minutes as a fraction combined
+ */
+
+function getDecimalTime(time = new Date()){
+    let hours = time.getHours();
+    let minutes = time.getMinutes();
 
     return (hours+minutes/60);
 }
 
 // Link to desmos to show concepts:
-// https://www.desmos.com/calculator/quyaf8r8sd 
+// https://www.desmos.com/calculator/jvwgnkwti7
 
 
+/*
+    redClock
+        QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
+         and returns how much r should be in a RGB color of the sky
+
+        Parameters: time, should be a number
+
+        When called:
+        1. redTime is called as a number of 0
+        2. If time is between 4 and 8 or time is between 16 and 20
+        2a. redTime is recalled as time * PI / 4
+        2b. redTime is recalled as the sine of itself
+        2c. redTime is recalled as its square
+        2d. redTime is multiplied by 12
+        3. IN ANY CASE OF time:
+        3a. redTime has 2 added to itself
+        3b. redTime is multiplied by 16
+        3c. round redTime for RGB reasons
+        3d. redTime is returned
+ */
 function redClock(time){
     let redTime=0;
 
@@ -148,9 +182,33 @@ function redClock(time){
         redTime *= 12;
     }
 
-    return (redTime+2)*16;
+    return Math.round((redTime+2)*16);
 }
 
+/*
+    greenClock
+        QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
+         and returns how much g should be in a RGB color of the sky
+
+        Parameters: time, should be a number
+
+        When called:
+        1. greenTime is declared as 0
+        2. If time is between 5 and 8, 3 is added to greenTime
+        3. Else if time is between 16 and 19, 1 is added to greenTime
+        4. Else is time is between 8 and 16, 10 is added to greenTime
+        5. If time is between 5 and 8 OR time is between 16 and 19
+        5a. time is added to greenTime
+        5b. greenTime is multiplied by pi/4
+        5c. The sine of greenTime is taken and stored as greenTime
+        5d. The sqaure root of greenTime is taken and stored as greenTime
+        5e. greenTime is multiplied by 13;
+        6. IN ANY CASE OF time
+        6a. greenTime has 2 added to itself
+        6b. greenTime is multiplied by 16
+        6c. round greenTime for RGB reasons
+        6d. greenTime is returned
+ */
 function greenClock(time){
     let greenTime = 0;
 
@@ -170,19 +228,47 @@ function greenClock(time){
         greenTime *= 13;
     }
 
-    return (greenTime+1)*16;
+    return Math.round((greenTime+1)*16);
 }
 
+/*
+    blueClock
+        QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
+         and returns how much b should be in a RGB color of the sky
+
+        Parameters: time, should be a number
+
+        When called:
+        1. blueTime is declared and stored as time * pi/24
+        2. The sine of blueTime is taken and stored as blueTime
+        3. The square root of blueTime is taken and stored as blueTime
+        4. blueTime is multiplied by 13
+        5. 3 is added to blueTime
+        6. blueTime is multiplied by 16
+        7. blueTime is rounded for RGB reasons
+        8. blueTime is returned
+ */
 function blueClock(time){
-    blueTime = time*Math.PI/24;
+    let blueTime = time*Math.PI/24;
     blueTime = Math.sin(blueTime);
     blueTime = Math.pow(blueTime,4);
     blueTime *= 13;
     blueTime += 3;
 
-    return blueTime*16;
+    return Math.round(blueTime*16);
 }
 
+/*
+    colorTime
+        QuickDesc: Takes in a number of how many hours (decimal) have been since midnight
+         and returns a hexcode of what the color of the sky might be
+
+        Parameters: time, should be a number
+
+        When called:
+        1. An unamed array is declared and stores the result of redClock, greenClock, and blueClock with respect to time
+        2. A hexcode is returned from the array and returned to the caller
+ */
 function colorTime(time){
     return rgbToHex([redClock(time),greenClock(time),blueClock(time)]);
 }
