@@ -147,6 +147,47 @@ function getDecimalTime(time = new Date()){
     return (hours+minutes/60);
 }
 
+/*
+    getCurrentTime
+        QuickDesc: Takes in a number and gives the annotated time
+
+        Parameters: time, should be a number
+            Defaults:
+                time will be from getDecimalTime's default
+
+        When called:
+        1. hours is called as how many hours have passed since midnight
+        2. minutes is called as how many minutes have passed since the last full hour
+        3. timing is declared
+        4. If hours is 0, then hours is 12 and timing is AM
+        5. Else if hours is greater than 12, timing is PM and 12 is subtracted from hours
+        6. Else timing is AM
+        7. If minutes is less than 10, minutes has a leading zero
+        8. Return the annotated time
+ */
+function getCurrentTime(time=getDecimalTime()){
+    let hours = Math.floor(time%24);
+    let minutes = Math.floor((time%1)*60);
+    let timing;
+
+    if (hours===0){
+        hours=12;
+        timing = "AM";
+    }
+    else if (hours>12) {
+        timing = "PM";
+        hours-=12;
+    } else {
+        timing = "AM";
+    }
+
+    if (minutes<10) {
+        minutes = "0"+minutes;
+    }
+
+    return hours+":"+minutes+" "+timing;
+}
+
 // Link to desmos to show concepts:
 // https://www.desmos.com/calculator/6maxcmbysb
 
@@ -169,7 +210,8 @@ function getDecimalTime(time = new Date()){
         3a. redTime has 2 added to itself
         3b. redTime is multiplied by 16
         3c. round redTime for RGB reasons
-        3d. redTime is returned
+        3d. redTime has 1 subtracted from itself for RGB reasons
+        3e. redTime is returned
  */
 function redClock(time){
     let redTime=0;
@@ -181,7 +223,7 @@ function redClock(time){
         redTime *= 12;
     }
 
-    return Math.round((redTime+2)*16);
+    return Math.round((redTime+2)*16)-1;
 }
 
 /*
@@ -203,10 +245,11 @@ function redClock(time){
         5d. The sqaure root of greenTime is taken and stored as greenTime
         5e. greenTime is multiplied by 13;
         6. IN ANY CASE OF time
-        6a. greenTime has 2 added to itself
+        6a. greenTime has 1 added to itself
         6b. greenTime is multiplied by 16
         6c. round greenTime for RGB reasons
-        6d. greenTime is returned
+        6d. greenTime has 1 subtracted from itself for RGB reasons
+        6e. greenTime is returned
  */
 function greenClock(time){
     let greenTime = 0;
@@ -227,7 +270,7 @@ function greenClock(time){
         greenTime *= 13;
     }
 
-    return Math.round((greenTime+1)*16);
+    return Math.round((greenTime+1)*16)-1;
 }
 
 /*
@@ -245,7 +288,8 @@ function greenClock(time){
         5. 3 is added to blueTime
         6. blueTime is multiplied by 16
         7. blueTime is rounded for RGB reasons
-        8. blueTime is returned
+        8. blueTime has 1 subtracted from itself for RGB reasons
+        9. blueTime is returned
  */
 function blueClock(time){
     let blueTime = time*Math.PI/24;
@@ -254,7 +298,7 @@ function blueClock(time){
     blueTime *= 13;
     blueTime += 3;
 
-    return Math.round(blueTime*16);
+    return Math.round(blueTime*16)-1;
 }
 
 /*
@@ -270,8 +314,9 @@ function blueClock(time){
         4. grayTime is multiplied by 8
         5. 8 is added to grayTime
         6. grayTime is multiplied by 16
-        7. grayTime is rounded for RGB reasons
-        8. A hexcode is returned from an RGB array with r, g, and b all being grayTime
+        7. grayTime has 1 subtracted from itself for RGB reasons
+        8. grayTime is rounded for RGB reasons
+        9. A hexcode is returned from an RGB array with r, g, and b all being grayTime
  */
 function grayClock(time){
     //console.log("time: "+time);
@@ -351,7 +396,7 @@ function navCompatCreate(time=0){
     let navList = [...document.querySelectorAll(".navbar"),...document.querySelectorAll('.slider-container')];
 
     navList.forEach(function(element){
-        element.style.backgroundColor = grayClock((getDecimalTime()+Number(time))%24);
+        element.style.backgroundColor = grayClock(time%24);
     });
 }
 
@@ -373,7 +418,7 @@ function navCompatCreate(time=0){
         2ba. The given element out of an array with all elements of class sky-piece's background color is the blueShift in the background color of the element before in the array
  */
 function skyCompatCreate(time=0){
-    let skyColor = colorTime((getDecimalTime()+Number(time))%24); 
+    let skyColor = colorTime(time%24); 
     for (var i=0;i<10;i++){
         if (i==0){
             document.querySelector(".sky-start").style.backgroundColor = skyColor;
@@ -452,8 +497,27 @@ document.addEventListener("DOMContentLoaded",function(){
 
     */
     document.querySelector(".slider").addEventListener("input",function(event){
-        document.querySelector(".hours-after").innerHTML = event.target.value;
+        document.querySelector(".hours-after").innerHTML = getCurrentTime(event.target.value);
         navCompatCreate(event.target.value);
         skyCompatCreate(event.target.value);
     });
+
+    // Cookie Handler
+    document.querySelector(".slider").addEventListener("change",function(event){
+        document.cookie = "timeAdder:"+event.target.value;
+    });
 });
+
+//Cookie Handler (No, they're not chocolate chip)
+// Looks for a cookie and resorts to default if its not there
+function findTime(){
+    var start = document.cookie.indexOf("timeAdder:");
+
+    if (start===-1){
+        return getDecimalTime();
+    }
+
+    var stop = document.cookie.length;
+
+    return Number(document.cookie.substring(start+10,stop));
+}

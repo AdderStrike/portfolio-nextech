@@ -75,3 +75,19 @@ body{
 .hours-after{
     font-size:20pt;
 }
+
+.canvas-base{
+    width:40vw;
+    height:40vw;
+    margin:auto;
+    margin-bottom:50px;
+    position:relative;
+}
+
+.canvas {
+    position:absolute;
+    left:0;
+    top:0;
+    width:inherit;
+    height:inherit;
+}

@@ -20,16 +20,28 @@
                 <a class="navbar-link" href="mrp.html">Mr P.'s Classroom</a>
                 <a class="navbar-link" href="nextech.html">Nextech</a>
             </nav>
+            <div class="canvas-base">
+                <canvas class="canvas" id="ico-place"></canvas>
+                <canvas class="canvas" id="pan-1"></canvas>
+                <canvas class="canvas" id="pan-2"></canvas>
+                <canvas class="canvas" id="pan-3"></canvas>
+                <canvas class="canvas" id="pan-4"></canvas>
+                <canvas class="canvas" id="pan-5"></canvas>
+            </div>
         </div>
+
         <div class="slider-container background-z">
-            <p class="slider-text hours-after">0</p>
-            <p class="slider-text dec-hours">Hours After</p>
-            <input type="range" min="0" max="24" value="0" class="slider" step="0.5">
+            <p class="slider-text hours-after"></p>
+            <p class="slider-text dec-hours">Virtual Time</p>
+            <input type="range" min="0" max="24" value="" class="slider" step="">
         </div>
     </body>
-    <script>     
-        let timeValue = document.querySelector('.slider').value;
-        createSky();
-        navCompatCreate();  
+    <script>
+        document.querySelector(".slider").value = findTime();
+        document.querySelector(".slider").step = 1/60;
+        document.querySelector(".hours-after").innerHTML = getCurrentTime(findTime());   
+        createSky(findTime());
+        navCompatCreate(findTime());
+        initMainCanvases();  
     </script>
 </html>
