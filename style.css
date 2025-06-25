@@ -77,9 +77,10 @@ body{
 }
 
 .canvas-base{
-    width:40vw;
-    height:40vw;
+    width:50vw;
+    height:50vw;
     margin:auto;
+    margin-top:50px;
     margin-bottom:50px;
     position:relative;
 }

@@ -2,7 +2,11 @@
     assist.js is the first javaScript file made for basic assists, such as color manipulation
 
     As per rules of js modules, NO GLOBAL VARIABLES
+
+    6/24/25, hey I made an exception for no global variables: PI
  */
+
+let pi=Math.PI;
 
 // Standard Functions
 
@@ -66,6 +70,40 @@ function rgbCSSWarp(color){
     
     //console.log(fracArray);
     return fracArray;
+}
+
+/*
+    sineColor
+        QuickDesc: takes in 1-4 parameters and gives a number back
+
+        Parameters: 
+            item, should be a number
+            period, should be a number
+            power, should be a number
+            amplitude, should be a number
+        Defaulting parameters:
+            period defaults to 1
+            power defaults to 1
+            amplitude defaults to 1
+
+        When called:
+        1. item is multiplied by period and stored as tempItem
+        2. The sine of tempItem is taken and stored as tempItem
+        3. tempItem is taken to the power of power and stored as tempItem
+        4. tempItem is returned as tempItem * amplitude
+ */
+function sineColor(item,period=1,power=1,amplitude=1){
+    let tempItem = item*period;
+    tempItem = Math.sin(tempItem);
+    tempItem = Math.pow(tempItem,power);
+    return tempItem*amplitude;
+}
+
+function finalizeRGBVal(item,additive){
+    let tempItem = item+additive;
+    tempItem *= 16;
+    tempItem -= 1;
+    return Math.round(tempItem);
 }
 
 //Custom Functions
@@ -217,13 +255,10 @@ function redClock(time){
     let redTime=0;
 
     if ((time>=4&&time<=8)||(time>=16&&time<=20)) {
-        redTime = time*Math.PI/4;
-        redTime = Math.sin(redTime);
-        redTime = Math.pow(redTime,2);
-        redTime *= 12;
+        redTime = sineColor(time,pi/4,2,12);
     }
 
-    return Math.round((redTime+2)*16)-1;
+    return finalizeRGBVal(redTime,2);
 }
 
 /*
@@ -263,14 +298,10 @@ function greenClock(time){
     }
 
     if ((time>=5&&time<=8)||(time>=16&&time<=19)){
-        greenTime += time;
-        greenTime *= Math.PI/4;
-        greenTime = Math.sin(greenTime);
-        greenTime = Math.pow(greenTime,1/2);
-        greenTime *= 13;
+        greenTime = sineColor(greenTime+time,pi/4,1/2,13);
     }
 
-    return Math.round((greenTime+1)*16)-1;
+    return finalizeRGBVal(greenTime,1);
 }
 
 /*
@@ -292,13 +323,8 @@ function greenClock(time){
         9. blueTime is returned
  */
 function blueClock(time){
-    let blueTime = time*Math.PI/24;
-    blueTime = Math.sin(blueTime);
-    blueTime = Math.pow(blueTime,4);
-    blueTime *= 13;
-    blueTime += 3;
-
-    return Math.round(blueTime*16)-1;
+    let blueTime = sineColor(time,pi/24,4,13);
+    return finalizeRGBVal(blueTime,3);
 }
 
 /*
@@ -319,26 +345,9 @@ function blueClock(time){
         9. A hexcode is returned from an RGB array with r, g, and b all being grayTime
  */
 function grayClock(time){
-    //console.log("time: "+time);
-    let grayTime = time*Math.PI/24;
-    //console.log("grayTime 1: "+grayTime);
-    grayTime = Math.sin(grayTime);
-    //console.log("grayTime 2: "+grayTime);
-    grayTime = Math.pow(grayTime,2);
-    //console.log("grayTime 3: "+grayTime);
-    grayTime *= 8;
-    //console.log("grayTime 4: "+grayTime);
-    grayTime += 8;
-    //console.log("grayTime 5: "+grayTime);
-
-    grayTime *= 16;
-
-    grayTime-=1;
-    //console.log("grayTime 6: "+grayTime);
-    grayTime = Math.round(grayTime);
-    //console.log("grayTime 7: "+grayTime);
+    let grayTime = sineColor(time,pi/24,2,8);
+    grayTime = finalizeRGBVal(grayTime,8);
     return rgbToHex([grayTime,grayTime,grayTime]);
-    
 }
 
 /*
@@ -356,11 +365,8 @@ function grayClock(time){
         6. A hexcode is returned from an RGB array with r, g, and b all being grayTime
  */
 function fullGrayClock(time){
-    let grayTime = time*Math.PI/24;
-    grayTime = Math.sin(grayTime);
-    grayTime = Math.pow(grayTime,2);
-    grayTime*=255;
-    grayTime = Math.round(grayTime);
+    let grayTime = sineColor(time,pi/24,2,256);
+    grayTime = finalizeRGBVal(grayTime,0);
     return rgbToHex([grayTime,grayTime,grayTime]);
 }
 
