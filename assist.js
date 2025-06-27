@@ -211,8 +211,9 @@ function getCurrentTime(time=getDecimalTime()){
     if (hours===0){
         hours=12;
         timing = "AM";
-    }
-    else if (hours>12) {
+    } else if(hours===12){
+        timing = "PM";
+    } else if (hours>12) {
         timing = "PM";
         hours-=12;
     } else {
@@ -365,9 +366,49 @@ function grayClock(time){
         6. A hexcode is returned from an RGB array with r, g, and b all being grayTime
  */
 function fullGrayClock(time){
-    let grayTime = sineColor(time,pi/24,2,256);
+    let grayTime = sineColor(time,pi/24,2,16);
     grayTime = finalizeRGBVal(grayTime,0);
+    while (grayTime<0) grayTime++;
     return rgbToHex([grayTime,grayTime,grayTime]);
+}
+
+function panClock(time){
+    //Basics
+    let fftobb = sineColor(time,pi/24,2,-4);
+    fftobb = finalizeRGBVal(fftobb,16);
+
+    let eight8to44 = sineColor(time,pi/24,2,-4);
+    eight8to44 = finalizeRGBVal(eight8to44,8);
+
+    let ffto88 = sineColor(time,pi/24,2,-8);
+    ffto88 = finalizeRGBVal(ffto88,16);
+
+    //RedPan
+    //Day   - #BB0000
+    //Night - #FF0000
+    let redColor = rgbToHex([fftobb,0,0]);
+
+    //OrangePan
+    //Day   - #BB4400
+    //Night - #FF8800
+    let orangeColor = rgbToHex([fftobb,eight8to44,0]);
+
+    //YellowPan
+    //Day   - #BB8800
+    //Night - #FFFF00
+    let yellowColor = rgbToHex([fftobb,ffto88,0]);
+
+    //GreenPan
+    //Day   - #00BB00
+    //Night - #00FF00
+    let greenColor = rgbToHex([0,fftobb,0]);
+
+    //BluePan
+    //Day   - #0000BB
+    //Night - #0000FF
+    let blueColor = rgbToHex([0,0,fftobb]);
+
+    return [redColor,greenColor,orangeColor,blueColor,yellowColor];
 }
 
 /*

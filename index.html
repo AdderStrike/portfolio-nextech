@@ -23,6 +23,7 @@
             </nav>
             <div class="canvas-base background-z">
                 <canvas class="canvas background-z" id="ico-place"></canvas>
+                <canvas class="canvas background-z" id="ico"></canvas>
                 <canvas class="canvas background-z" id="pan-1"></canvas>
                 <canvas class="canvas background-z" id="pan-2"></canvas>
                 <canvas class="canvas background-z" id="pan-3"></canvas>
@@ -43,11 +44,12 @@
         document.querySelector(".hours-after").innerHTML = getCurrentTime(findTime());   
         createSky(findTime());
         navCompatCreate(findTime());
-        initMainCanvasses(fullGrayClock(findTime()));
-        //initIcosahedron();
+        initMainCanvasses(fullGrayClock(findTime()),panClock(findTime()));
+        initIcosahedron(fullGrayClock(findTime()));
 
         document.querySelector(".slider").addEventListener("input",function(event){
-            initMainCanvasses(fullGrayClock(event.target.value))
+            initMainCanvasses(fullGrayClock(event.target.value),panClock(event.target.value));
+            icoColorUpdate(fullGrayClock(event.target.value));
         });
     </script>
 </html>
