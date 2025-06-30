@@ -575,3 +575,7 @@ function findTime(){
 
     return Number(document.cookie.substring(start+10,stop));
 }
+
+function cookieReset(){
+    document.cookie = "";
+}

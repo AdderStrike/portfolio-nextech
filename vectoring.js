@@ -507,7 +507,80 @@ function initMainCanvasses(color,colorArray){
 
     let panArray = [redPan,greenPan,orangePan,bluePan,yellowPan];
 
+    let panGradient = [false,false,false,false,false];
+    let prevI=-1;
+
+    function panHover(event){
+            let panToBe;
+            let boundRect = centerCan.getBoundingClientRect();
+            let handlerX = event.clientX-(boundRect.right-boundRect.left);
+            let handlerY = (event.clientY-(boundRect.bottom-boundRect.top))*-1;
+            let angleDeterminer = Math.atan2(-1*handlerY,-1*handlerX)+pi;
+            angleDeterminer *= 180/pi;
+            angleDeterminer -= 90;
+            if(angleDeterminer<=0)angleDeterminer+=360;
+            let i;
+            for (i=0;i<5;i++){
+                if (angleDeterminer<=(i+1)*72&&angleDeterminer>=i*72){
+                    panToBe = panArray[i];
+                    break;
+                }
+            }
+            if (prevI!==i||prevI===-1){
+                panGradient[prevI] = false;
+                if (prevI!==-1) {
+                    let givenAngle = pi*3/2-rotationInc*prevI;
+                    let aligner = givenAngle-rotationInc/2;
+                    let supplement = givenAngle-rotationInc;
+
+                    let handler = panArray[prevI].getContext("2d");
+                    handler.beginPath();
+                    handler.arc(hx+Math.cos(aligner)*lineWidth,hy+Math.sin(aligner)*lineWidth,dividerStart,givenAngle,supplement,true);
+                    handler.arc(hx+Math.cos(givenAngle)*lineWidth/2,hy+Math.sin(givenAngle)*lineWidth/2,hy,supplement,givenAngle);
+                    handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth/2*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth/2*Math.sin(aligner));
+                    gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
+                    gradient.addColorStop(0.0,color);
+                    gradient.addColorStop(0.75,color);
+                    gradient.addColorStop(1,"rgb(0 0 0 / 0%)");
+                    handler.fillStyle = gradient;
+                    handler.fill();
+                }
+
+                prevI = i;
+                //console.log(prevI===i);
+            }
+            if (!panGradient[i]){
+                let givenAngle = pi*3/2-rotationInc*i;
+                let aligner = givenAngle-rotationInc/2;
+                let supplement = givenAngle-rotationInc;
+
+                let handler = panToBe.getContext("2d");
+                handler.beginPath();
+                handler.arc(hx+Math.cos(aligner)*lineWidth,hy+Math.sin(aligner)*lineWidth,dividerStart,givenAngle,supplement,true);
+                handler.arc(hx+Math.cos(givenAngle)*lineWidth/2,hy+Math.sin(givenAngle)*lineWidth/2,hy,supplement,givenAngle);
+                handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth/2*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth/2*Math.sin(aligner));
+                gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
+                gradient.addColorStop(0.0,colorArray[i]);
+                gradient.addColorStop(0.75,"rgb(0 0 0 / 0%)");
+                handler.fillStyle = gradient;
+                handler.fill();
+
+                panGradient[i] = true;
+            }
+        }
+    function formHover(){
+        let targetPan = document.querySelector("#pan-5");
+        targetPan.addEventListener("mouseenter",function(event){
+            targetPan.addEventListener("mousemove",panHover);
+            targetPan.addEventListener("mouseleave",function easyLeave(event){
+                targetPan.removeEventListener("mousemove",panHover);
+                targetPan.removeEventListener("mouseleave",easyLeave);
+            });
+
+        });
+    }
     panArray.forEach(function(element,index) {
+        document.removeEventListener("DOMContentLoaded",formHover);
         let handler = element.getContext("2d");
         element.width = width;
         element.height = width;
@@ -515,15 +588,15 @@ function initMainCanvasses(color,colorArray){
         handler.lineWidth = lineWidth;
         handler.clearRect(0,0,x,y);
         gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
-        gradient.addColorStop(0.0,colorArray[index]);
-        gradient.addColorStop(0.1,colorArray[index]);
+        gradient.addColorStop(0.0,color);
+        gradient.addColorStop(0.1,color);
         gradient.addColorStop(0.75,"rgb(0 0 0 / 0%)");
         handler.strokeStyle = gradient;
         //handler.strokeStyle = colorArray[index];
         handler.beginPath();
 
         let givenAngle = pi*3/2-rotationInc*index;
-        let aligner = givenAngle-rotationInc/2
+        let aligner = givenAngle-rotationInc/2;
         let supplement = givenAngle-rotationInc;
 
         handler.arc(hx+Math.cos(aligner)*lineWidth,hy+Math.sin(aligner)*lineWidth,dividerStart,givenAngle,supplement,true);
@@ -531,7 +604,10 @@ function initMainCanvasses(color,colorArray){
         handler.arc(hx+Math.cos(givenAngle)*lineWidth/2,hy+Math.sin(givenAngle)*lineWidth/2,hy,supplement,givenAngle);
         handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth/2*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth/2*Math.sin(aligner));
         handler.stroke();
+
+        document.addEventListener("DOMContentLoaded",formHover());       
     });
+    
     
 }
 
@@ -633,6 +709,8 @@ function icoColorUpdate(color) {
     ico.getPolygonList().forEach(function(element){
         element.setColor(color,borderColor);
     });
+
+
 }
 
 setInterval(function(){axisAngle--;},5000);

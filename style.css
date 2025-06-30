@@ -92,3 +92,12 @@ body{
     width:inherit;
     height:inherit;
 }
+.body-text{
+    width:80vw;
+    padding:5vw;
+    margin:5vw;
+    background-color: lightgray;
+    color:black;
+    border-radius:20px;
+    border: dimgrey solid 5px;
+}
