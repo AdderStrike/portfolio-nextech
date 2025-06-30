@@ -1,9 +1,10 @@
 /*
     assist.js is the first javaScript file made for basic assists, such as color manipulation
 
-    As per rules of js modules, NO GLOBAL VARIABLES
+    As per rules of js modules, NO GLOBAL VARIABLES, constants only!
 
     6/24/25, hey I made an exception for no global variables: PI
+    6/27/25, changed the rules to allow constants
  */
 
 let pi=Math.PI;
@@ -99,7 +100,23 @@ function sineColor(item,period=1,power=1,amplitude=1){
     return tempItem*amplitude;
 }
 
-function finalizeRGBVal(item,additive){
+/*
+    finalizeRGBVal
+        QuickDesc: Takes in 1-2 numbers and outputs a number between 0-255
+
+        Parameters: 
+            item, should be a number
+            additive, should be a number
+        Defaulting parameters:
+            additive defaults to 0
+
+        When called:
+        1. item is summed with additive and stored as tempItem
+        2. tempItem is multiplied by 16
+        3. tempItem has 1 subtracted from it
+        4. tempItem is rounded for RGB reasons and returned
+ */
+function finalizeRGBVal(item,additive=0){
     let tempItem = item+additive;
     tempItem *= 16;
     tempItem -= 1;
@@ -239,18 +256,10 @@ function getCurrentTime(time=getDecimalTime()){
         Parameters: time, should be a number
 
         When called:
-        1. redTime is called as a number of 0
+        1. redTime is declared as 0
         2. If time is between 4 and 8 or time is between 16 and 20
-        2a. redTime is recalled as time * PI / 4
-        2b. redTime is recalled as the sine of itself
-        2c. redTime is recalled as its square
-        2d. redTime is multiplied by 12
-        3. IN ANY CASE OF time:
-        3a. redTime has 2 added to itself
-        3b. redTime is multiplied by 16
-        3c. round redTime for RGB reasons
-        3d. redTime has 1 subtracted from itself for RGB reasons
-        3e. redTime is returned
+        2a. sineColor with respect to time, pi/4, 2, and 12 is taken and stored as redTim
+        3. finalizeRGBVal with respect to redTime and 2 is taken and returned
  */
 function redClock(time){
     let redTime=0;
@@ -275,17 +284,8 @@ function redClock(time){
         3. Else if time is between 16 and 19, 1 is added to greenTime
         4. Else is time is between 8 and 16, 10 is added to greenTime
         5. If time is between 5 and 8 OR time is between 16 and 19
-        5a. time is added to greenTime
-        5b. greenTime is multiplied by pi/4
-        5c. The sine of greenTime is taken and stored as greenTime
-        5d. The sqaure root of greenTime is taken and stored as greenTime
-        5e. greenTime is multiplied by 13;
-        6. IN ANY CASE OF time
-        6a. greenTime has 1 added to itself
-        6b. greenTime is multiplied by 16
-        6c. round greenTime for RGB reasons
-        6d. greenTime has 1 subtracted from itself for RGB reasons
-        6e. greenTime is returned
+        5a. sineColor with repect to greenTime+time, pi/4, 1/2, and 13 is taken and stored as greenTime
+        6. finalizeRGBVal with respect to greenTime and 1 is taken and returned
  */
 function greenClock(time){
     let greenTime = 0;
@@ -313,15 +313,8 @@ function greenClock(time){
         Parameters: time, should be a number
 
         When called:
-        1. blueTime is declared and stored as time * pi/24
-        2. The sine of blueTime is taken and stored as blueTime
-        3. The quartic of blueTime is taken and stored as blueTime
-        4. blueTime is multiplied by 13
-        5. 3 is added to blueTime
-        6. blueTime is multiplied by 16
-        7. blueTime is rounded for RGB reasons
-        8. blueTime has 1 subtracted from itself for RGB reasons
-        9. blueTime is returned
+        1. sinColor with respect to time, pi/24, 4, and 13 is taken and stored as blueTime
+        2. finalizeRGBVal with respect to blueTime and 3 is taken and returned
  */
 function blueClock(time){
     let blueTime = sineColor(time,pi/24,4,13);
@@ -335,15 +328,9 @@ function blueClock(time){
         Parameters: time, should be a number
 
         When called:
-        1. grayTime is declared and stored as time*pi/24
-        2. The sine of grayTime is taken and stored as grayTime
-        3. The square of grayTime is taken and stored as grayTime
-        4. grayTime is multiplied by 8
-        5. 8 is added to grayTime
-        6. grayTime is multiplied by 16
-        7. grayTime has 1 subtracted from itself for RGB reasons
-        8. grayTime is rounded for RGB reasons
-        9. A hexcode is returned from an RGB array with r, g, and b all being grayTime
+        1. sinColor with respect to time, pi/24, 2, and 8 is taken and stored as grayTime
+        2. finalizeRGBVal with respect to grayTime and 8 is taken and stored as grayTime
+        3. A hexcode is returned from an RGB array with r, g, and b all being grayTime
  */
 function grayClock(time){
     let grayTime = sineColor(time,pi/24,2,8);
@@ -358,20 +345,40 @@ function grayClock(time){
         Parameters: time, should be a number
 
         When called:
-        1. grayTime is declared and stored as time*pi/24
-        2. The sine of grayTime is taken and stored as grayTime
-        3. The square of grayTime is taken and stored as grayTime
-        4. grayTime is multiplied by 255
-        5. grayTime is rounded for RGB reasons
-        6. A hexcode is returned from an RGB array with r, g, and b all being grayTime
+        1. sineColor with respect to time, pi/24, 2, and 16 is taken and stored as grayTime
+        2. finalizeRGBVal with respect to grayTime is taken and stored as grayTime;
+        3. In the event that grayTime is negative, set grayTime to 0
+        4. A hexcode is returned from an RGB array with r, g, and b all being grayTime
  */
 function fullGrayClock(time){
     let grayTime = sineColor(time,pi/24,2,16);
-    grayTime = finalizeRGBVal(grayTime,0);
-    while (grayTime<0) grayTime++;
+    grayTime = finalizeRGBVal(grayTime);
+    if (grayTime<0) grayTime=0;
     return rgbToHex([grayTime,grayTime,grayTime]);
 }
 
+/*
+    panClock
+        QuickDesc: takes in time and gives an array of what the hub colors should be
+
+        Parameters: 
+            time, should be a number
+
+        When called:
+        1. sineColor with respect to time, pi/24, 2, and -4 is taken and stored as fftobb
+        2. finalizeRGBVal with respect to fftobb, and 16 is taken and stored as fftobb
+        3. sineColor with respect to time, pi/24, 2, and -4 is taken and stored as eight8to44
+        4. finalizeRGBVal with respect to eight8to44, and 8 is taken and stored as eight8to44
+        5. sineColor with respect to time, pi/24, 2, and -8 is taken and stored as ffto88
+        6. finalizeRGBVal with respect to ffto88, and 16 is taken and stored as ffto88
+        7. rgbToHex with only fftobb as its red and 0s else is taken and stored as redColor
+        8. rgbToHex with fftobb as red and eight8to44 as green and 0 as blue is taken and stored as orangeColor
+        9. rgbToHex with fftobb as red and ffto88 as green and 0 as blue is taken and stored as yellowColor
+        10. rgbToHex with only fftobb as green and 0s else is taken and stored as greenColor
+        11. rgbToHex with only fftobb as blue and 0s else is taken and stored as blueColor
+        12. An array is declared with [redColor,greenColor,orangeColor,blueColor,yellowColor] and returned
+        (Note:the array is arranged for contrasting purposes)
+ */
 function panClock(time){
     //Basics
     let fftobb = sineColor(time,pi/24,2,-4);
@@ -549,7 +556,7 @@ document.addEventListener("DOMContentLoaded",function(){
         skyCompatCreate(event.target.value);
     });
 
-    // Cookie Handler
+    // Cookie Handler for slider
     document.querySelector(".slider").addEventListener("change",function(event){
         document.cookie = "timeAdder:"+event.target.value;
     });
