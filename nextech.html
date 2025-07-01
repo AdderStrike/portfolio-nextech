@@ -2,11 +2,11 @@
 <html>
     <head>
         <title>My Portfolio</title>
-        <link href="style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <link href="style.css" rel="stylesheet">
         <script src="assist.js"></script>
     </head>
     <body>
@@ -20,6 +20,20 @@
                 <a class="navbar-link" href="mrp.html">Mr P.'s Classroom</a>
                 <a class="navbar-link" href="nextech.html">Nextech</a>
             </nav>
+
+            <div class="body-text background-z">
+                <span class="nextech-container">
+                    <img class="nextech-img" src = "data:image/png;base64,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">
+                </span>
+                <h1>What is Nextech?</h1>
+                <p>Nextech is a company that assists with technology</p>
+                <p>They host a program for high schoolers called Nextech Catapult</p>
+                <p>This portfolio was made from this program!</p>
+                <p>There's also a few other webisites I made during the program</p>
+            </div>
+
+            <div class="spacer"></div>
+
         </div>
 
         <div class="slider-container background-z">

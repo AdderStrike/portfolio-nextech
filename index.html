@@ -2,11 +2,11 @@
 <html>
     <head>
         <title>My Portfolio</title>
-        <link href="style.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <link href="style.css" rel="stylesheet">
         <script src="assist.js"></script>
         <script src="vectoring.js"></script>
     </head>
@@ -22,6 +22,12 @@
                 <a class="navbar-link" href="nextech.html">Nextech</a>
             </nav>
             <div class="canvas-base background-z">
+                <a href ="aboutme.html"><div class="hub-text background-z2">About Me</div></a>
+                <a href="nextech.html"><div class="hub-text background-z2">Nextech</div></a>
+                <a href ="mrp.html"><div class="hub-text background-z2">Mr P's Class</div></a>
+                <a href ="coding.html"><div class="hub-text background-z2">Coding Skills</div></a>
+                <a href ="adventures.html"><div class="hub-text background-z2">Adventures</div></a>
+
                 <canvas class="canvas background-z" id="ico-place"></canvas>
                 <canvas class="canvas background-z" id="ico"></canvas>
                 <canvas class="canvas background-z" id="pan-1"></canvas>
@@ -46,10 +52,12 @@
         navCompatCreate(findTime());
         initMainCanvasses(fullGrayClock(findTime()),panClock(findTime()));
         initIcosahedron(fullGrayClock(findTime()));
+        hubTextColorUpdate(fullGrayClock(findTime()));
 
         document.querySelector(".slider").addEventListener("input",function(event){
             initMainCanvasses(fullGrayClock(event.target.value),panClock(event.target.value));
             icoColorUpdate(fullGrayClock(event.target.value));
+            hubTextColorUpdate(fullGrayClock(event.target.value));
         });
     </script>
 </html>

@@ -510,7 +510,7 @@ function skyCompatCreate(time=0){
 
  */
 function createSky(time=0){
-    let skyGivenHeight = screen.height; 
+    let skyGivenHeight = window.innerHeight; 
     for(var i=0;i<10;i++){ 
         let skyPiece = document.createElement("div");
         skyPiece.setAttribute("class","sky-piece");
@@ -577,5 +577,15 @@ function findTime(){
 }
 
 function cookieReset(){
-    document.cookie = "";
+    document.cookie="hello!";
+}
+//cookieReset();
+
+function hubTextColorUpdate(color){
+    let textColor = "#000000";
+    if (color<"#808080") textColor = "#FFFFFF";
+    document.querySelectorAll(".hub-text").forEach(function(element){
+        element.style.color = textColor;
+        element.style.backgroundColor = color;
+    });
 }

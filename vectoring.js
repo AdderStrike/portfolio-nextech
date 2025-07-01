@@ -393,41 +393,13 @@ const dividerStart = hx/5;
 let degreeAmount = 0;
 let axisAngle = 90;
 
-/*
-    initMainCanvasses
-    QuickDesc: takes a color and a color set to give life to a hub piece
-    parameters:
-        2 required
-            color, should be a hexCode
-            colorArray, should be an array of hexCodes
-    When called:
-        1. rotationInc is declared as pi*0.4 and set as a const
-        2. gradient is declared
-        3. lineWidth is declared as x/100
-        4. centerCan is declared as the first HTML Canvas Element with id ico-place
-        5. centerCan's canvas width is set as width;
-        6. centerCan's canvas height is set as width;
-        7. centerHandler is declared as centerCan's 2D context
-        8. centerHandler sets a clearRectangle with diagonal corner coordinates of (0,0) to (x,y)
-        9. centerHandler begins its path
-        10. centerHandler draws an arc with center coordinate (hx,hy), a radius of 40, and angle of 0 to 2*pi
-            (Note:angles are drawn clockwise unless stated from here on out in this function)
-        11. centerHandler's fillStyle is set to color
-        12. centerHandler fills the path
-        13. gradient is given a value: centerHandler's createRadialGradient with 
-            start coordinate of (hx,hy), a start radius of 40, an end coordinate of (hx,hy),
-            and an end radius of hy
-        14. gradient adds a colorStop at 0% for color
-        15. gradient adds a colorStop at 75% for color
-        16. gradient adds a colorStop at 100% for a cssRGBCode of completely transparent black
-        17. centerHandler's fillStyle is set to gradient;
-        18. centerHandler fills a rectangle with diagonal coordinates of (0,0) and (x,y)
-        See below for more steps
-*/
+
 function initMainCanvasses(color,colorArray){
     const rotationInc = pi*0.4;
     let gradient;
     let lineWidth = x/100;
+    let colorRGB = hexToRGB(color);
+
 
     let centerCan = document.querySelector("canvas#ico-place");
     centerCan.width = width;
@@ -435,60 +407,13 @@ function initMainCanvasses(color,colorArray){
 
     let centerHandler = centerCan.getContext("2d");
     centerHandler.clearRect(0,0,x,y);
-
     centerHandler.beginPath();
     centerHandler.arc(hx,hy,40,0,2*pi);
     centerHandler.fillStyle = color;
     centerHandler.fill();
-
-    gradient = centerHandler.createRadialGradient(hx,hy,40,hx,hy,hy);
-    gradient.addColorStop(0.0,color);
-    gradient.addColorStop(0.75,color);
-    gradient.addColorStop(1,"rgb(0 0 0 / 0%)");
-    centerHandler.fillStyle = gradient;
+    centerHandler.fillStyle = transparentGradient(centerHandler,hx,hy,40,hy,color,0.75,1);
     centerHandler.fillRect(0,0,x,y);
 
-    /*
-        See above for previous steps
-        
-        When called (con't):
-            19. redPan is called as the first element with id pan-1
-            20. greenPan is called as the first element with id pan-2
-            21. orangePan is called as the first element with id pan-3
-            22. bluePan is called as the first element with id pan-4
-            23. yellowPan is called as the first element with id pan-5
-            24. panArray is declared as the array [redPan,greenPan,orangePan,bluePan,yellowPan]
-                (Note: this array is setup as it is for contrast reasons)
-            25. For each value in panArray, take the current value as element and index and inc.
-            25a. handler is declared as the element's 2D context
-            25b. The element's width and height are declared to be width
-            25c. handler's lineWidth is saved as lineWidth
-            25d. handler sets up a clearRectangle with diagonalCoordinates of (0,0) and (x,y)
-            25e. gradient is set as handler's createRadialGradient with
-                start coordinates (hx,hy), a start radius of dividerStart,
-                end coordinates (hx,hy), and an end radius of hy
-            25f. gradient adds a color stop at 0% for the item at index in colorArray
-            25g. gradient adds a color stop at 10% for the item at index in colorArray
-            25h. gradient adds a color stop at 75% for a cssRGBCode of transparent black
-            25i. handler's strokeStyle is set as gradient
-            25j. handler begins its path
-            25k. givenAngle is declared as pi*3/2-rotationInc*index
-            25l. aligner is declared as givenAngle-rotationInc/2
-            25m. supplement is declared as givenAngle-rotationInc
-            25n. handler draws an arc with centerCoordinates (hx+Math.cos(aligner)*lineWidth,hy-Math.sin(aligner)*lineWidth),
-                a radius of dividerStart, a start angle of givenAngle, an end angle of supplement, and have it counterclockwise
-            25o. handler draws an arc with centerCoordinates (hx+Math.cos(aligner)*lineWidth/2,hy-Math.sin(aligner)*lineWidth/2),
-                a radius of hy, a start angle of supplement, and an angle of givenAngle
-            25pa. xPart1 = hx
-            25pb. xPart2 = dividerStart*Math.cos(givenAngle)
-            25pc. xPArt3 = lineWidth*0.5*Math.cos(aligner)
-            25pd. yPart1 = hy
-            25pe. yPart2 = dividerStart*Math.cos(givenAngle)
-            25pf. yPArt3 = lineWidth*0.5*Math.cos(aligner)
-            25pg. handler draws a line to (xPart1+xpart2+xPart3,yPart1+yPart2+yPart3)
-            25q. handler executes a stroke
-
-    */
     //Day   - #BB0000
     //Night - #FF0000
     let redPan = document.querySelector("#pan-1");
@@ -510,22 +435,58 @@ function initMainCanvasses(color,colorArray){
     let panGradient = [false,false,false,false,false];
     let prevI=-1;
 
-    function panHover(event){
-            let panToBe;
-            let boundRect = centerCan.getBoundingClientRect();
-            let handlerX = event.clientX-(boundRect.right-boundRect.left);
-            let handlerY = (event.clientY-(boundRect.bottom-boundRect.top))*-1;
-            let angleDeterminer = Math.atan2(-1*handlerY,-1*handlerX)+pi;
-            angleDeterminer *= 180/pi;
-            angleDeterminer -= 90;
-            if(angleDeterminer<=0)angleDeterminer+=360;
-            let i;
-            for (i=0;i<5;i++){
-                if (angleDeterminer<=(i+1)*72&&angleDeterminer>=i*72){
-                    panToBe = panArray[i];
-                    break;
-                }
+    function findPointer(event){
+        let panToBe;
+        let boundRect = document.querySelector("canvas#ico-place").getBoundingClientRect();
+        let handlerX = event.clientX-boundRect.left-hx;
+        let handlerY = (event.clientY-boundRect.top-hy)*-1;
+        let angleDeterminer = Math.atan2(-1*handlerY,-1*handlerX)+pi;
+        angleDeterminer *= 180/pi;
+        angleDeterminer -= 90;
+        if(angleDeterminer<=0)angleDeterminer+=360;
+        //console.log((event.clientY-boundRect.top)*-1+hy);
+        let i;
+        for (i=0;i<5;i++){
+            if (angleDeterminer<=(i+1)*72&&angleDeterminer>=i*72){
+                panToBe = panArray[i];
+                break;
             }
+        }
+        return [panToBe,i];
+    }
+
+    function transparentGradient(handler,xPos,yPos,radius1,radius2,color,stepMid,stepEnd){
+        let gradient = handler.createRadialGradient(xPos,yPos,radius1,xPos,yPos,radius2);
+        gradient.addColorStop(0.0,color);
+        gradient.addColorStop(stepMid,color);
+        gradient.addColorStop(stepEnd,`rgb(${colorRGB[0]} ${colorRGB[1]} ${colorRGB[2]} /0%)`);
+        return gradient;
+    }
+
+    function clickTo(event){
+        let [,i] = findPointer(event);
+        switch (i) {
+            case 0:
+                window.open("aboutme.html","_self");
+                break;
+            case 1:
+                window.open("adventures.html","_self");
+                break;
+            case 2:
+                window.open("coding.html","_self");
+                break;
+            case 3:
+                window.open("mrp.html","_self");
+                break;
+            case 4:
+                window.open("nextech.html","_self");
+                break;   
+        }
+    }
+
+    function panHover(event){
+            let [panToBe,i] = findPointer(event);
+            //console.log(prevI+","+i);
             if (prevI!==i||prevI===-1){
                 panGradient[prevI] = false;
                 if (prevI!==-1) {
@@ -534,16 +495,16 @@ function initMainCanvasses(color,colorArray){
                     let supplement = givenAngle-rotationInc;
 
                     let handler = panArray[prevI].getContext("2d");
-                    handler.beginPath();
-                    handler.arc(hx+Math.cos(aligner)*lineWidth,hy+Math.sin(aligner)*lineWidth,dividerStart,givenAngle,supplement,true);
-                    handler.arc(hx+Math.cos(givenAngle)*lineWidth/2,hy+Math.sin(givenAngle)*lineWidth/2,hy,supplement,givenAngle);
-                    handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth/2*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth/2*Math.sin(aligner));
-                    gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
-                    gradient.addColorStop(0.0,color);
-                    gradient.addColorStop(0.75,color);
-                    gradient.addColorStop(1,"rgb(0 0 0 / 0%)");
-                    handler.fillStyle = gradient;
-                    handler.fill();
+                    handler.globalCompositeOperation = "destination-out";
+                    for (var j=0;j<2;j++){
+                        //arcHandler(handler,hx,hy,dividerStart,hy,givenAngle,supplement,aligner,lineWidth*3/2,color,"rgb(0 0 0 / 0%)",0.1,0.75,1);
+                        handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
+                        handler.arc(hx+Math.cos(givenAngle)*lineWidth/1,hy+Math.sin(givenAngle)*lineWidth,hy,supplement,givenAngle);
+                        handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*Math.sin(aligner));
+                        handler.fillStyle = transparentGradient(handler,hx,hy,dividerStart+lineWidth,hy,color,0.75,1);
+                        handler.fill();
+                    }
+                    handler.globalCompositeOperation = "source-over";
                 }
 
                 prevI = i;
@@ -554,15 +515,13 @@ function initMainCanvasses(color,colorArray){
                 let aligner = givenAngle-rotationInc/2;
                 let supplement = givenAngle-rotationInc;
 
+
                 let handler = panToBe.getContext("2d");
                 handler.beginPath();
-                handler.arc(hx+Math.cos(aligner)*lineWidth,hy+Math.sin(aligner)*lineWidth,dividerStart,givenAngle,supplement,true);
-                handler.arc(hx+Math.cos(givenAngle)*lineWidth/2,hy+Math.sin(givenAngle)*lineWidth/2,hy,supplement,givenAngle);
-                handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth/2*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth/2*Math.sin(aligner));
-                gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
-                gradient.addColorStop(0.0,colorArray[i]);
-                gradient.addColorStop(0.75,"rgb(0 0 0 / 0%)");
-                handler.fillStyle = gradient;
+                handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
+                handler.arc(hx+Math.cos(givenAngle)*lineWidth*1,hy+Math.sin(givenAngle)*lineWidth*1,hy,supplement,givenAngle);
+                handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*1*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*1*Math.sin(aligner));
+                handler.fillStyle = transparentGradient(handler,hx,hy,dividerStart+lineWidth,hy,colorArray[i],0.0,0.75);
                 handler.fill();
 
                 panGradient[i] = true;
@@ -570,17 +529,40 @@ function initMainCanvasses(color,colorArray){
         }
     function formHover(){
         let targetPan = document.querySelector("#pan-5");
-        targetPan.addEventListener("mouseenter",function(event){
+        targetPan.addEventListener("mouseenter",function (event){
             targetPan.addEventListener("mousemove",panHover);
-            targetPan.addEventListener("mouseleave",function easyLeave(event){
+            targetPan.addEventListener("click", clickTo);
+            targetPan.addEventListener("mouseleave",function easyLeave(){
                 targetPan.removeEventListener("mousemove",panHover);
                 targetPan.removeEventListener("mouseleave",easyLeave);
+                targetPan.removeEventListener("click",clickTo);
+                let [panToBe,i] = findPointer(event);
+                let givenAngle = pi*3/2-rotationInc*i;
+                let aligner = givenAngle-rotationInc/2;
+                let supplement = givenAngle-rotationInc;
+
+                let handler = panToBe.getContext("2d");
+                handler.globalCompositeOperation = "destination-out";
+                for (var j=0;j<2;j++){
+                    //arcHandler(handler,hx,hy,dividerStart,hy,givenAngle,supplement,aligner,lineWidth*10,color,"rgb(0 0 0 / 0%)",0.1,0.75,1);
+                    handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
+                    handler.arc(hx+Math.cos(givenAngle)*lineWidth/1,hy+Math.sin(givenAngle)*lineWidth,hy,supplement,givenAngle);
+                    handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*Math.sin(aligner));
+                    gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
+                    gradient.addColorStop(0.0,color);
+                    gradient.addColorStop(0.75,color);
+                    gradient.addColorStop(1,`rgb(${colorRGB[0]} ${colorRGB[1]} ${colorRGB[2]} / 0%)`);
+                    handler.fillStyle = gradient;
+                    handler.fill();
+                }
+                handler.globalCompositeOperation = "source-over";
             });
 
         });
     }
+    document.removeEventListener("DOMContentLoaded",formHover);
+    document.addEventListener("DOMContentLoaded",formHover);  
     panArray.forEach(function(element,index) {
-        document.removeEventListener("DOMContentLoaded",formHover);
         let handler = element.getContext("2d");
         element.width = width;
         element.height = width;
@@ -588,9 +570,9 @@ function initMainCanvasses(color,colorArray){
         handler.lineWidth = lineWidth;
         handler.clearRect(0,0,x,y);
         gradient = handler.createRadialGradient(hx,hy,dividerStart,hx,hy,hy);
-        gradient.addColorStop(0.0,color);
-        gradient.addColorStop(0.1,color);
-        gradient.addColorStop(0.75,"rgb(0 0 0 / 0%)");
+        gradient.addColorStop(0.0,colorArray[index]);
+        gradient.addColorStop(0.1,colorArray[index]);
+        gradient.addColorStop(0.75,`rgb(${colorRGB[0]} ${colorRGB[1]} ${colorRGB[2]}  / 0%)`);
         handler.strokeStyle = gradient;
         //handler.strokeStyle = colorArray[index];
         handler.beginPath();
@@ -605,7 +587,7 @@ function initMainCanvasses(color,colorArray){
         handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth/2*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth/2*Math.sin(aligner));
         handler.stroke();
 
-        document.addEventListener("DOMContentLoaded",formHover());       
+     
     });
     
     
@@ -763,7 +745,7 @@ function formIco(){
     let axis = [Math.cos(axisAngle*pi/180),0,Math.sin(axisAngle*pi/180)];
 
     icoHandler.strokeStyle = ico.getPolygonList()[0].getBorderColor();
-    icoHandler.lineWidth = 1;
+    icoHandler.lineWidth = x/500;
     icoHandler.fillStyle = ico.getPolygonList()[0].getColor();
 
     ico.getPolygonList().forEach(function(element){
