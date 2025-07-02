@@ -393,26 +393,27 @@ const dividerStart = hx/5;
 let degreeAmount = 0;
 let axisAngle = 90;
 
+/* 
+    initMainCanvasses is a nester function,
+    
+    I wont go into too much detail here due to its complexity
 
+    This is the function responsible for making all of the hub except for text (which is handled by a CSS function)
+    It is also responsible for making the hub responsive for hovering and clicking on it
+
+    The nested functions are used only in the nester function and require a scope found in the nester function
+
+    */
 function initMainCanvasses(color,colorArray){
+    // Necessay variables and constants
     const rotationInc = pi*0.4;
     let gradient;
     let lineWidth = x/100;
     let colorRGB = hexToRGB(color);
+    let panGradient = [false,false,false,false,false];
+    let prevI=-1;
 
-
-    let centerCan = document.querySelector("canvas#ico-place");
-    centerCan.width = width;
-    centerCan.height = width;
-
-    let centerHandler = centerCan.getContext("2d");
-    centerHandler.clearRect(0,0,x,y);
-    centerHandler.beginPath();
-    centerHandler.arc(hx,hy,40,0,2*pi);
-    centerHandler.fillStyle = color;
-    centerHandler.fill();
-    centerHandler.fillStyle = transparentGradient(centerHandler,hx,hy,40,hy,color,0.75,1);
-    centerHandler.fillRect(0,0,x,y);
+    // These hex codes are what the colors should be at 12:00 PM and 12:00 AM
 
     //Day   - #BB0000
     //Night - #FF0000
@@ -432,9 +433,30 @@ function initMainCanvasses(color,colorArray){
 
     let panArray = [redPan,greenPan,orangePan,bluePan,yellowPan];
 
-    let panGradient = [false,false,false,false,false];
-    let prevI=-1;
+    /*
+        findPointer
+        QuickDesc: locates the pointer relative to the center of the canvas 
+            and provides the supposed pan and index for where the pointer is
 
+        Parameters: event, an Event
+
+        When called:
+        1. panTobe is declared
+        2. boundRect is declared as the first HTMLElement that is a canvas element with id ico-place's ClientRectBounds
+        3. handlerX is declared as the difference between event's clientX, boundRect's left value, and hx
+        4. handlerY is declared as the negation of the difference between event's clientY, boundRect's top value, and hy
+        5. angleDeterminer is declared as the sum of arctangent from origin to coord (-1*handlerX,-1*handlerY) and pi
+        6. angleDeterminer is converted from radians to degrees
+        7. 90 degrees is subtracted from angleDeterminer
+        8. is angleDeterminer is negative, 360 is added to it
+        9. i is declared now for scope reasons
+        10. For 5 times with i as iterator starting at 0
+        10a. If angleDeterminer is less than (i+1)*72 and angleDeterminer is greater than i*72
+        10aa. panTobe is saved as the item in panArray as item i
+        10ab. break for loop started in step 10
+        10b. An array of [panToBe,i] is returned
+
+    */
     function findPointer(event){
         let panToBe;
         let boundRect = document.querySelector("canvas#ico-place").getBoundingClientRect();
@@ -455,6 +477,30 @@ function initMainCanvasses(color,colorArray){
         return [panToBe,i];
     }
 
+    /*
+        transparentGradient
+        QuickDesc: creates a fading gradient and returns it
+
+        Parameters: 
+            8 required
+                handler, should be a 2d Context
+                xPos, should be a number
+                yPos, should be a number
+                radius1, should be a number
+                radius2, should be a number
+                color, should be a hex code
+                stepMid, should be a number between 0 and 1
+                stepEnd, should be a number between 0 and 1
+
+        When called:
+        1. gradient is declared as a radialGradient with respect to xPos, yPos, radius1, and radius2
+        2. gradient adds a color stop at 0% with color color
+        3. gradient adds a color stop at stepMid with color color
+        4. gradient adds a color stop at stepEnd with a CSS RGB code of colorRGB / 0%
+        5. gradient is returned as itself
+
+    */
+
     function transparentGradient(handler,xPos,yPos,radius1,radius2,color,stepMid,stepEnd){
         let gradient = handler.createRadialGradient(xPos,yPos,radius1,xPos,yPos,radius2);
         gradient.addColorStop(0.0,color);
@@ -463,6 +509,22 @@ function initMainCanvasses(color,colorArray){
         return gradient;
     }
 
+    /*
+        clickTo
+        QuickDesc: Takes an event and sends the user to a specified page
+
+        Parameters: event, should be an Event
+
+        When called:
+        1. i is declared as the corresponder item from findPointer with respect to event
+        2. i is on a switch
+        2a. case 0: open aboutme.html
+        2b. case 1: open adventures.html
+        2c. case 2: open coding.html
+        2d. case 3: open mrp.html
+        2e. case 4: open nextech.html
+
+    */
     function clickTo(event){
         let [,i] = findPointer(event);
         switch (i) {
@@ -484,49 +546,111 @@ function initMainCanvasses(color,colorArray){
         }
     }
 
+    /*
+        panHover
+        QuickDesc: When the mouse is moved, this function activates is the pointer is in the canvas
+
+        Parameters: event, should be an Event
+
+        When called:
+        1. panToBe and i are declared from the results of findPointer with respect to event
+        2. givenAngle is declared as the difference between pi*3/2 and rotationInc*prevI
+        3. aligner is declared as the difference between givenAngle and rotationInc/2
+        4. supplement is declared as the difference between givenAngle and rotationInc
+        5. If prevI is not equal to i OR prevI is equal to -1
+        5a. The item in panGradient at index prevI is now false
+        5b. If prevI is not equal to -1
+        5ba. handler is declared as the item in panArray at index prevI's 2D Context;
+        5bb. handler's globalCompositeOperation is set to destination-out (carver functions)
+        5bc. Next steps repeated twice:
+        5bca. handler forms an arc at center coordinates (<givenX>,<givenY>), and with a radius of dividerStart, an angle range from givenAngle to supplement and force counterclockwise
+        5bcb. handler is forced to draw a line from steps 2bfa to 2bfc
+        5bcc. handler forms an arc at center coordinates (<givenX>,<givenY>), and with a radius of hy, and an angle range from supplement to givenAngle
+        5bcd. handler draws a line from (<givenX1>,<givenY1>) to (<givenX2>,<givenY2>)
+        5bce. handler's fillStyle is set to the result of transparentGradient with respect to handler, hy, hy, dividerStart+lineWidth,hy,color,0.75,and 1
+        5bcf. handler fills the path
+        5bd. handler's globalCompositeOperation is set to source-over (draw-over functions)
+        5c. prevI is set to i
+        6. If the item panGradient at index i is NOT true
+        6a. handler is declared as panToBe's 2D Context
+        6b. handler forms an arc at center coordinates (<givenX>,<givenY>), and with a radius of dividerStart, an angle range from givenAngle to supplement and force counterclockwise
+        6c. handler is forced to draw a line from steps 2bfa to 2bfc
+        6d. handler forms an arc at center coordinates (<givenX>,<givenY>), and with a radius of hy, and an angle range from supplement to givenAngle
+        6e. handler draws a line from (<givenX1>,<givenY1>) to (<givenX2>,<givenY2>)
+        6f. handler's fillStyle is set to the result of transparentGradient with respect to handler, hy, hy, dividerStart+lineWidth,hy,colorArray[i],0.75,and 1
+        6g. handler fills the path
+        6h. The item in panGradient is set to true
+    */
     function panHover(event){
-            let [panToBe,i] = findPointer(event);
-            //console.log(prevI+","+i);
-            if (prevI!==i||prevI===-1){
-                panGradient[prevI] = false;
-                if (prevI!==-1) {
-                    let givenAngle = pi*3/2-rotationInc*prevI;
-                    let aligner = givenAngle-rotationInc/2;
-                    let supplement = givenAngle-rotationInc;
+        let [panToBe,i] = findPointer(event);
+        let givenAngle = pi*3/2-rotationInc*prevI;
+        let aligner = givenAngle-rotationInc/2;
+        let supplement = givenAngle-rotationInc;
+        //console.log(prevI+","+i);
+        if (prevI!==i||prevI===-1){
+            panGradient[prevI] = false;
+            if (prevI!==-1) {
 
-                    let handler = panArray[prevI].getContext("2d");
-                    handler.globalCompositeOperation = "destination-out";
-                    for (var j=0;j<2;j++){
-                        //arcHandler(handler,hx,hy,dividerStart,hy,givenAngle,supplement,aligner,lineWidth*3/2,color,"rgb(0 0 0 / 0%)",0.1,0.75,1);
-                        handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
-                        handler.arc(hx+Math.cos(givenAngle)*lineWidth/1,hy+Math.sin(givenAngle)*lineWidth,hy,supplement,givenAngle);
-                        handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*Math.sin(aligner));
-                        handler.fillStyle = transparentGradient(handler,hx,hy,dividerStart+lineWidth,hy,color,0.75,1);
-                        handler.fill();
-                    }
-                    handler.globalCompositeOperation = "source-over";
+                let handler = panArray[prevI].getContext("2d");
+                handler.globalCompositeOperation = "destination-out";
+                for (var j=0;j<2;j++){
+                    //arcHandler(handler,hx,hy,dividerStart,hy,givenAngle,supplement,aligner,lineWidth*3/2,color,"rgb(0 0 0 / 0%)",0.1,0.75,1);
+                    handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
+                    handler.arc(hx+Math.cos(givenAngle)*lineWidth/1,hy+Math.sin(givenAngle)*lineWidth,hy,supplement,givenAngle);
+                    handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*Math.sin(aligner));
+                    handler.fillStyle = transparentGradient(handler,hx,hy,dividerStart+lineWidth,hy,color,0.75,1);
+                    handler.fill();
                 }
-
-                prevI = i;
-                //console.log(prevI===i);
+                handler.globalCompositeOperation = "source-over";
             }
-            if (!panGradient[i]){
-                let givenAngle = pi*3/2-rotationInc*i;
-                let aligner = givenAngle-rotationInc/2;
-                let supplement = givenAngle-rotationInc;
 
-
-                let handler = panToBe.getContext("2d");
-                handler.beginPath();
-                handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
-                handler.arc(hx+Math.cos(givenAngle)*lineWidth*1,hy+Math.sin(givenAngle)*lineWidth*1,hy,supplement,givenAngle);
-                handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*1*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*1*Math.sin(aligner));
-                handler.fillStyle = transparentGradient(handler,hx,hy,dividerStart+lineWidth,hy,colorArray[i],0.0,0.75);
-                handler.fill();
-
-                panGradient[i] = true;
-            }
+            prevI = i;
+            //console.log(prevI===i);
         }
+        if (!panGradient[i]){
+
+            let handler = panToBe.getContext("2d");
+            handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
+            handler.arc(hx+Math.cos(givenAngle)*lineWidth*1,hy+Math.sin(givenAngle)*lineWidth*1,hy,supplement,givenAngle);
+            handler.lineTo(hx+(dividerStart)*Math.cos(givenAngle)+lineWidth*1*Math.cos(aligner),hy+dividerStart*Math.sin(givenAngle)+lineWidth*1*Math.sin(aligner));
+            handler.fillStyle = transparentGradient(handler,hx,hy,dividerStart+lineWidth,hy,colorArray[i],0.0,0.75);
+            handler.fill();
+
+            panGradient[i] = true;
+        }
+    }
+
+    /*
+        formHover
+        QuickDesc: When the mouse is in the canvas an does any action, this function handles it
+            Includes mouse hovering, mouse clicking, and the mouse moving in, out, and within
+
+        Parameters: none
+
+        When called:
+        1. targetPan is declared as the first HTMLElement with id pan-5
+        2. targetPan is given a new EventListener that looks for the mouse entering targetPan and does the following with the Event as parameter event:
+        2a. targetPan is given a new EventListener that looks for the mouse moving within targetPan and calls panHover with respect to event
+        2b. targetPan is given a new EventListener that looks for the mouse clicking on targetPan and calls clickTo with respect to event
+        2c. targetPan is given a new EventListener that looks for the mouse leaving targetPan and calls easyLeave, which does the following:
+        2ca. targetPan has the EventListener made in step 2a removed
+        2cb. targetPan has the EventListener made in step 2b removed
+        2cc. targetPan has the EventListener made in step 2c removed
+        2cd. panToBe and i are declared as the results of findPointer with respect to event
+        2ce. givenAngle is declared as the difference between pi*3/2 and rotationInc*prevI
+        2cf. aligner is declared as the difference between givenAngle and rotationInc/2
+        2cg. supplement is declared as the difference between givenAngle and rotationInc
+        2ch. handler is declared as panToBe's 2D Context;
+        2ci. handler's globalCompositeOperation is set to destination-out (carver functions)
+        2cj. Next steps repeated twice:
+        2cja. handler forms an arc at center coordinates (<givenX>,<givenY>), and with a radius of dividerStart, an angle range from givenAngle to supplement and force counterclockwise
+        2cjb. handler is forced to draw a line from steps 2bfa to 2bfc
+        2cjc. handler forms an arc at center coordinates (<givenX>,<givenY>), and with a radius of hy, and an angle range from supplement to givenAngle
+        2cjd. handler draws a line from (<givenX1>,<givenY1>) to (<givenX2>,<givenY2>)
+        2cje. handler's fillStyle is set to the result of transparentGradient with respect to handler, hy, hy, dividerStart+lineWidth,hy,color,0.75,and 1
+        2cjf. handler fills the path
+        2bk. handler's globalCompositeOperation is set to source-over (draw-over functions)
+    */
     function formHover(){
         let targetPan = document.querySelector("#pan-5");
         targetPan.addEventListener("mouseenter",function (event){
@@ -534,8 +658,8 @@ function initMainCanvasses(color,colorArray){
             targetPan.addEventListener("click", clickTo);
             targetPan.addEventListener("mouseleave",function easyLeave(){
                 targetPan.removeEventListener("mousemove",panHover);
-                targetPan.removeEventListener("mouseleave",easyLeave);
                 targetPan.removeEventListener("click",clickTo);
+                targetPan.removeEventListener("mouseleave",easyLeave);
                 let [panToBe,i] = findPointer(event);
                 let givenAngle = pi*3/2-rotationInc*i;
                 let aligner = givenAngle-rotationInc/2;
@@ -560,8 +684,26 @@ function initMainCanvasses(color,colorArray){
 
         });
     }
+    
+    // The main part of the nester function: Activates the basic outlines 
+    let centerCan = document.querySelector("canvas#ico-place");
+    centerCan.width = width;
+    centerCan.height = width;
+
+    let centerHandler = centerCan.getContext("2d");
+    centerHandler.clearRect(0,0,x,y);
+    centerHandler.beginPath();
+    centerHandler.arc(hx,hy,40,0,2*pi);
+    centerHandler.fillStyle = color;
+    centerHandler.fill();
+    centerHandler.fillStyle = transparentGradient(centerHandler,hx,hy,40,hy,color,0.75,1);
+    centerHandler.fillRect(0,0,x,y);
+
+    // This line deactivates and reactivates formHover
     document.removeEventListener("DOMContentLoaded",formHover);
     document.addEventListener("DOMContentLoaded",formHover);  
+
+    // The line-maker
     panArray.forEach(function(element,index) {
         let handler = element.getContext("2d");
         element.width = width;
@@ -736,13 +878,11 @@ setInterval(function(){axisAngle--;},5000);
 */
 function formIco(){
     let icoCanvas = document.querySelector("#ico");
+    let axis = [Math.cos(axisAngle*pi/180),0,Math.sin(axisAngle*pi/180)];
     icoCanvas.width = width;
     icoCanvas.height = width;
     let icoHandler = icoCanvas.getContext("2d");
-
     icoHandler.clearRect(0,0,x,y);
-
-    let axis = [Math.cos(axisAngle*pi/180),0,Math.sin(axisAngle*pi/180)];
 
     icoHandler.strokeStyle = ico.getPolygonList()[0].getBorderColor();
     icoHandler.lineWidth = x/500;

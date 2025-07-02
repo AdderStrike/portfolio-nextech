@@ -5,3 +5,33 @@ Enjoy!
 QUICK CHANGELOG:
 JUNE 6th
 --Made portfolio repo
+--Started BlueSky function
+
+JUNE 10th
+--BlueSky now handles night colors
+
+JUNE 11th
+--ClockColor functions upgraded
+--Handled starter HTML structures
+
+JUNE 23rd
+--Bootstrap called in as backup
+--Finished background with BlueSky patching
+
+JUNE 24th
+--Icosahedron starting
+
+JUNE 25th
+--Made more pages
+
+JUNE 26th
+--Ico is nearly finished, all that's left now is rounding point handling
+
+JUNE 29th
+--Ico with other functions completed
+
+JUNE 30th
+--Finished major HTML structure, touching up is all that's left
+
+JULY 1st
+--Finished 1st full version, documentation included

@@ -1,6 +1,12 @@
 /*
     assist.js is the first javaScript file made for basic assists, such as color manipulation
 
+    In the event you see the word lexicograph-, think Unicode.
+    
+    If character A has a greater unicode char designation value than character B,
+            then char A > char B is true and char A < char B is false
+    Strings with multiple characters check one character at a time, with "" being the least value
+
     As per rules of js modules, NO GLOBAL VARIABLES, constants only!
 
     6/24/25, hey I made an exception for no global variables: PI
@@ -74,115 +80,6 @@ function rgbCSSWarp(color){
 }
 
 /*
-    sineColor
-        QuickDesc: takes in 1-4 parameters and gives a number back
-
-        Parameters: 
-            item, should be a number
-            period, should be a number
-            power, should be a number
-            amplitude, should be a number
-        Defaulting parameters:
-            period defaults to 1
-            power defaults to 1
-            amplitude defaults to 1
-
-        When called:
-        1. item is multiplied by period and stored as tempItem
-        2. The sine of tempItem is taken and stored as tempItem
-        3. tempItem is taken to the power of power and stored as tempItem
-        4. tempItem is returned as tempItem * amplitude
- */
-function sineColor(item,period=1,power=1,amplitude=1){
-    let tempItem = item*period;
-    tempItem = Math.sin(tempItem);
-    tempItem = Math.pow(tempItem,power);
-    return tempItem*amplitude;
-}
-
-/*
-    finalizeRGBVal
-        QuickDesc: Takes in 1-2 numbers and outputs a number between 0-255
-
-        Parameters: 
-            item, should be a number
-            additive, should be a number
-        Defaulting parameters:
-            additive defaults to 0
-
-        When called:
-        1. item is summed with additive and stored as tempItem
-        2. tempItem is multiplied by 16
-        3. tempItem has 1 subtracted from it
-        4. tempItem is rounded for RGB reasons and returned
- */
-function finalizeRGBVal(item,additive=0){
-    let tempItem = item+additive;
-    tempItem *= 16;
-    tempItem -= 1;
-    return Math.round(tempItem);
-}
-
-//Custom Functions
-
-/*
-    blueShift
-        QuickDesc: takes in an object and determines the RGB array for it, then
-                    modifies the color to make it more of a sky-blue
-                    and returns a hex code for the new color;
-
-        Parameters: color, unknown on what it could be
-
-        Custom Error: 
-            BlueShift Error:
-                BlueShift has encountered an uncomputed color error and is not prepared.
-
-        When called:
-        1.  color is typed to raw object, then string and is determined whether
-            hexToRGB should be used or rgbCSSWarp should be used.
-                Note: It is possible to cause an exception by using an incorrect string
-        2.  After the result is returned as an RGB array called color, the first element is multiplied by 3/4
-        3.  The second element checks for if it is in the correct range and adjusts itself towards it
-        4.  The third element is adjusted towards a maximum of 255
-        5.  All elements in color are rounded for regex purposes
-        6.  color is returned as a hex code of itself
- */
-function blueShift(color) {
-    //console.log("Starting Color for Blue Shift: "+JSON.stringify(color)[1]);
-    if (JSON.stringify(color)[1]=="#"){
-        //console.log("Choosing HEXER");
-        color = hexToRGB(color);
-    } else if (JSON.stringify(color)[1]=="r") {
-        //console.log("Choosing WARPER");
-        color = rgbCSSWarp(color);
-    } else {
-        throw("BlueShift Error:BlueShift has encountered an uncomputed color error and is not prepared.")
-    }
-
-    color[0]*=3/4;
-
-    if (color[1]<128-color[0]/4){
-        color[1] += color[0]/4;
-    } else if (color[1]>128+color[0]/4){
-        color[1] -= color[0]/4;
-    }
-
-    if (color[2]+color[0]/4>=255){
-        color[2]=255;
-    } else {
-        color[2]+=color[0]/4;
-    }
-
-    for (var i=0;i<color.length;i++){
-        color[i]=Math.round(color[i]);
-    }
-  //console.log(color);
-
-  return rgbToHex(color);
-
-}
-
-/*
     getDecimalTime
         QuickDesc: takes in a Date object and returns how many hours (decimal) have passed since midnight
 
@@ -244,9 +141,117 @@ function getCurrentTime(time=getDecimalTime()){
     return hours+":"+minutes+" "+timing;
 }
 
-// Link to desmos to show concepts:
+//Custom Functions
+
+// Link to desmos to show concepts for sunset colors:
 // https://www.desmos.com/calculator/6maxcmbysb
 
+/*
+    sineColor
+        QuickDesc: takes in 1-4 parameters and gives a number back
+
+        Parameters: 
+            item, should be a number
+            period, should be a number
+            power, should be a number
+            amplitude, should be a number
+        Defaulting parameters:
+            period defaults to 1
+            power defaults to 1
+            amplitude defaults to 1
+
+        When called:
+        1. item is multiplied by period and stored as tempItem
+        2. The sine of tempItem is taken and stored as tempItem
+        3. tempItem is taken to the power of power and stored as tempItem
+        4. tempItem is returned as tempItem * amplitude
+ */
+function sineColor(item,period=1,power=1,amplitude=1){
+    let tempItem = item*period;
+    tempItem = Math.sin(tempItem);
+    tempItem = Math.pow(tempItem,power);
+    return tempItem*amplitude;
+}
+
+/*
+    finalizeRGBVal
+        QuickDesc: Takes in 1-2 numbers and outputs a number between 0-255
+
+        Parameters: 
+            item, should be a number
+            additive, should be a number
+        Defaulting parameters:
+            additive defaults to 0
+
+        When called:
+        1. item is summed with additive and stored as tempItem
+        2. tempItem is multiplied by 16
+        3. tempItem has 1 subtracted from it
+        4. tempItem is rounded for RGB reasons and returned
+ */
+function finalizeRGBVal(item,additive=0){
+    let tempItem = item+additive;
+    tempItem *= 16;
+    tempItem -= 1;
+    return Math.round(tempItem);
+}
+
+/*
+    blueShift
+        QuickDesc: takes in an object and determines the RGB array for it, then
+                    modifies the color to make it more of a sky-blue
+                    and returns a hex code for the new color;
+
+        Parameters: color, unknown on what it could be
+
+        Custom Error: 
+            BlueShift Error:
+                BlueShift has encountered an uncomputed color error and is not prepared.
+
+        When called:
+        1.  color is typed to raw object, then string and is determined whether
+            hexToRGB should be used or rgbCSSWarp should be used.
+                Note: It is possible to cause an exception by using an incorrect string
+        2.  After the result is returned as an RGB array called color, the first element is multiplied by 3/4
+        3.  The second element checks for if it is in the correct range and adjusts itself towards it
+        4.  The third element is adjusted towards a maximum of 255
+        5.  All elements in color are rounded for regex purposes
+        6.  color is returned as a hex code of itself
+ */
+function blueShift(color) {
+    //console.log("Starting Color for Blue Shift: "+JSON.stringify(color)[1]);
+    if (JSON.stringify(color)[1]=="#"){
+        //console.log("Choosing HEXER");
+        color = hexToRGB(color);
+    } else if (JSON.stringify(color)[1]=="r") {
+        //console.log("Choosing WARPER");
+        color = rgbCSSWarp(color);
+    } else {
+        throw("BlueShift Error:BlueShift has encountered an uncomputed color error and is not prepared.")
+    }
+
+    color[0]*=3/4;
+
+    if (color[1]<128-color[0]/4){
+        color[1] += color[0]/4;
+    } else if (color[1]>128+color[0]/4){
+        color[1] -= color[0]/4;
+    }
+
+    if (color[2]+color[0]/4>=255){
+        color[2]=255;
+    } else {
+        color[2]+=color[0]/4;
+    }
+
+    for (var i=0;i<color.length;i++){
+        color[i]=Math.round(color[i]);
+    }
+  //console.log(color);
+
+  return rgbToHex(color);
+
+}
 
 /*
     redClock
@@ -484,6 +489,28 @@ function skyCompatCreate(time=0){
 }
 
 /*
+    hubTextColorUpdate
+        QuickDesc: changes the text color and background color of the links to other places in the hub
+
+        Parameters: color, should be a hex code
+
+        When called:
+        1. textColor is declared as the hex code #000000
+        2. If color has a greater lexicographical value than #808080, then textColor stores #FFFFFF instead
+        3. For all instances of .hub-text and an iterated instance called element
+        3a. element's style's value for color is textColor
+        3b. element's style's value for backgroundColor is color
+ */
+function hubTextColorUpdate(color){
+    let textColor = "#000000";
+    if (color<"#808080") textColor = "#FFFFFF";
+    document.querySelectorAll(".hub-text").forEach(function(element){
+        element.style.color = textColor;
+        element.style.backgroundColor = color;
+    });
+}
+
+/*
     createSky
         QuickDesc: Creates the background that is in all websites by manipulating divs
 
@@ -562,7 +589,7 @@ document.addEventListener("DOMContentLoaded",function(){
     });
 });
 
-//Cookie Handler (No, they're not chocolate chip)
+//Cookie Handler (No, they're not chocolate chip sorry)
 // Looks for a cookie and resorts to default if its not there
 function findTime(){
     var start = document.cookie.indexOf("timeAdder:");
@@ -576,16 +603,8 @@ function findTime(){
     return Number(document.cookie.substring(start+10,stop));
 }
 
+// Cookie Reset
 function cookieReset(){
     document.cookie="hello!";
 }
 //cookieReset();
-
-function hubTextColorUpdate(color){
-    let textColor = "#000000";
-    if (color<"#808080") textColor = "#FFFFFF";
-    document.querySelectorAll(".hub-text").forEach(function(element){
-        element.style.color = textColor;
-        element.style.backgroundColor = color;
-    });
-}
