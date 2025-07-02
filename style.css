@@ -1,3 +1,4 @@
+/* tag styling */
 body{
     background-color:#111111;
     justify-content:center;
@@ -15,6 +16,7 @@ p{
     font-size:2vw;
 }
 
+/* Table styling */
 table{
     width:70vw;
     padding:5vw;
@@ -80,6 +82,7 @@ table tr:last-child td:last-child {
     height:10vw;
 }
 
+/* Background styling and sky styling */
 .backgrounder{
     z-index:0;
     /*margin-top:-100vh;*/
@@ -108,6 +111,7 @@ table tr:last-child td:last-child {
     z-index:-1;
 }
 
+/* Navbar styling */
 .navbar {
     padding:1vw;
     margin:1vw;
@@ -130,6 +134,7 @@ table tr:last-child td:last-child {
     font-size:2vw;
 }
 
+/* Slider Styling */
 .slider-container{
     position:fixed;
     bottom:0;
@@ -157,6 +162,9 @@ table tr:last-child td:last-child {
     font-size:3vw;
 }
 
+/* Hub Styling */
+
+/* Canvas styling*/
 .canvas-base{
     width:50vw;
     height:50vw;
@@ -176,16 +184,8 @@ table tr:last-child td:last-child {
     width:inherit;
     height:inherit;
 }
-.body-text{
-    width:80vw;
-    padding:5vw;
-    margin:10vw;
-    background-color: lightgray;
-    color:black;
-    border-radius:2vw;
-    border: dimgrey solid 0.5vw;
-}
 
+/* Hub Text styling */
 .hub-text{
     left:37%;
     top:45%;
@@ -203,6 +203,17 @@ table tr:last-child td:last-child {
             rotateZ(calc((var(--nth-child) + 6)*calc(360/5)*-1deg));
 }
 
+/* Basic Outline Styling */
+.body-text{
+    width:80vw;
+    padding:5vw;
+    margin:10vw;
+    background-color: lightgray;
+    color:black;
+    border-radius:2vw;
+    border: dimgrey solid 0.5vw;
+}
+
 .key-mark {
     font-weight:900;
     font-size:6vh;
@@ -217,6 +228,20 @@ table tr:last-child td:last-child {
     display:flex;
 }
 
+.spacer{
+
+    height:10vw;
+}
+
+.site-list{
+    text-align:center;
+}
+
+.site-img{
+    height:10vw;
+}
+
+/* Hover styling for the large numbers */
 .number-given{
     text-align:center;
     display:block;
@@ -253,6 +278,7 @@ table tr:last-child td:last-child {
     word-break:normal;
 }
 
+/* Mr. P' logo's styling */
 .mrp{
     font-size:2vw;
     text-align:center;
@@ -286,6 +312,7 @@ table tr:last-child td:last-child {
     background-color: black;
 }
 
+/* Nextech's logo's styling */
 .nextech-container{
     width: 40vw;
     margin-left:auto;
@@ -302,17 +329,4 @@ table tr:last-child td:last-child {
 .nextech-img{
     height:20vw;
     border-radius:25vw;
-}
-
-.spacer{
-
-    height:10vw;
-}
-
-.site-list{
-    text-align:center;
-}
-
-.site-img{
-    height:10vw;
 }
