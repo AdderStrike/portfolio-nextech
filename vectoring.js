@@ -583,14 +583,13 @@ function initMainCanvasses(color,colorArray){
     */
     function panHover(event){
         let [panToBe,i] = findPointer(event);
-        let givenAngle = pi*3/2-rotationInc*prevI;
-        let aligner = givenAngle-rotationInc/2;
-        let supplement = givenAngle-rotationInc;
         //console.log(prevI+","+i);
         if (prevI!==i||prevI===-1){
             panGradient[prevI] = false;
             if (prevI!==-1) {
-
+                let givenAngle = pi*3/2-rotationInc*prevI;
+                let aligner = givenAngle-rotationInc/2;
+                let supplement = givenAngle-rotationInc;
                 let handler = panArray[prevI].getContext("2d");
                 handler.globalCompositeOperation = "destination-out";
                 for (var j=0;j<2;j++){
@@ -608,7 +607,9 @@ function initMainCanvasses(color,colorArray){
             //console.log(prevI===i);
         }
         if (!panGradient[i]){
-
+            let givenAngle = pi*3/2-rotationInc*prevI;
+            let aligner = givenAngle-rotationInc/2;
+            let supplement = givenAngle-rotationInc;
             let handler = panToBe.getContext("2d");
             handler.arc(hx+Math.cos(aligner)*lineWidth*3/2,hy+Math.sin(aligner)*lineWidth*3/2,dividerStart,givenAngle,supplement,true);
             handler.arc(hx+Math.cos(givenAngle)*lineWidth*1,hy+Math.sin(givenAngle)*lineWidth*1,hy,supplement,givenAngle);
